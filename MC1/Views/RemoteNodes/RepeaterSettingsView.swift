@@ -128,12 +128,19 @@ private struct BehaviorSection: View {
                 get: { viewModel.repeaterEnabled ?? false },
                 set: { viewModel.repeaterEnabled = $0 }
             ))
+                .disabled(viewModel.repeaterEnabled == nil)
+                .accessibilityValue(
+                    viewModel.repeaterEnabled == nil
+                        ? (viewModel.isLoadingBehavior ? L10n.RemoteNodes.RemoteNodes.Settings.loading : L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad)
+                        : (viewModel.repeaterEnabled == true ? "On" : "Off")
+                )
                 .overlay(alignment: .trailing) {
-                    if viewModel.repeaterEnabled == nil && viewModel.isLoadingBehavior {
-                        Text(L10n.RemoteNodes.RemoteNodes.Settings.loading)
+                    if viewModel.repeaterEnabled == nil {
+                        Text(viewModel.isLoadingBehavior ? L10n.RemoteNodes.RemoteNodes.Settings.loading : (viewModel.behaviorError ? L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad : "—"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .padding(.trailing, 60)
+                            .accessibilityHidden(true)
                     }
                 }
 

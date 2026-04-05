@@ -509,36 +509,54 @@ struct RemoteNodeIdentitySection: View {
             HStack {
                 Text(L10n.RemoteNodes.RemoteNodes.name)
                 Spacer()
-                TextField(L10n.RemoteNodes.RemoteNodes.name, text: Binding(
-                    get: { settings.name ?? "" },
-                    set: { settings.name = $0 }
-                ))
-                .multilineTextAlignment(.trailing)
-                .focused(focusedField, equals: .identityName)
+                if let name = settings.name {
+                    TextField(L10n.RemoteNodes.RemoteNodes.name, text: Binding(
+                        get: { name },
+                        set: { settings.name = $0 }
+                    ))
+                    .multilineTextAlignment(.trailing)
+                    .focused(focusedField, equals: .identityName)
+                } else {
+                    Text(settings.isLoadingIdentity ? L10n.RemoteNodes.RemoteNodes.Settings.loading : (settings.identityError ? L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad : "—"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             HStack {
                 Text(L10n.RemoteNodes.RemoteNodes.Settings.latitude)
                 Spacer()
-                TextField(L10n.RemoteNodes.RemoteNodes.Settings.latitude, value: Binding(
-                    get: { settings.latitude ?? 0 },
-                    set: { settings.latitude = $0 }
-                ), format: .number.precision(.fractionLength(6)))
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 140)
+                if let latitude = settings.latitude {
+                    TextField(L10n.RemoteNodes.RemoteNodes.Settings.latitude, value: Binding(
+                        get: { latitude },
+                        set: { settings.latitude = $0 }
+                    ), format: .number.precision(.fractionLength(6)))
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 140)
+                } else {
+                    Text(settings.isLoadingIdentity ? L10n.RemoteNodes.RemoteNodes.Settings.loading : (settings.identityError ? L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad : "—"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             HStack {
                 Text(L10n.RemoteNodes.RemoteNodes.Settings.longitude)
                 Spacer()
-                TextField(L10n.RemoteNodes.RemoteNodes.Settings.longitude, value: Binding(
-                    get: { settings.longitude ?? 0 },
-                    set: { settings.longitude = $0 }
-                ), format: .number.precision(.fractionLength(6)))
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 140)
+                if let longitude = settings.longitude {
+                    TextField(L10n.RemoteNodes.RemoteNodes.Settings.longitude, value: Binding(
+                        get: { longitude },
+                        set: { settings.longitude = $0 }
+                    ), format: .number.precision(.fractionLength(6)))
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 140)
+                } else {
+                    Text(settings.isLoadingIdentity ? L10n.RemoteNodes.RemoteNodes.Settings.loading : (settings.identityError ? L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad : "—"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Button(L10n.RemoteNodes.RemoteNodes.Settings.pickOnMap, systemImage: "map") {

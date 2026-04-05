@@ -97,9 +97,10 @@ private struct RoomAccessSection: View {
                 set: { viewModel.guestPassword = $0 }
             ))
             .focused(focusedField, equals: .guestPassword)
+            .disabled(viewModel.guestPassword == nil)
             .overlay(alignment: .trailing) {
-                if viewModel.guestPassword == nil && viewModel.isLoadingRoomAccess {
-                    Text(L10n.RemoteNodes.RemoteNodes.Settings.loading)
+                if viewModel.guestPassword == nil {
+                    Text(viewModel.isLoadingRoomAccess ? L10n.RemoteNodes.RemoteNodes.Settings.loading : (viewModel.roomAccessError ? L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad : "—"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.trailing, 8)
@@ -110,12 +111,19 @@ private struct RoomAccessSection: View {
                 get: { viewModel.allowReadOnly ?? false },
                 set: { viewModel.allowReadOnly = $0 }
             ))
+                .disabled(viewModel.allowReadOnly == nil)
+                .accessibilityValue(
+                    viewModel.allowReadOnly == nil
+                        ? (viewModel.isLoadingRoomAccess ? L10n.RemoteNodes.RemoteNodes.Settings.loading : L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad)
+                        : (viewModel.allowReadOnly == true ? "On" : "Off")
+                )
                 .overlay(alignment: .trailing) {
-                    if viewModel.allowReadOnly == nil && viewModel.isLoadingRoomAccess {
-                        Text(L10n.RemoteNodes.RemoteNodes.Settings.loading)
+                    if viewModel.allowReadOnly == nil {
+                        Text(viewModel.isLoadingRoomAccess ? L10n.RemoteNodes.RemoteNodes.Settings.loading : (viewModel.roomAccessError ? L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad : "—"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .padding(.trailing, 60)
+                            .accessibilityHidden(true)
                     }
                 }
 
