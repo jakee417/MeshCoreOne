@@ -420,20 +420,17 @@ final class LineOfSightViewModel {
         let dimOpacity = 0.3
 
         if let r = repeaterPoint?.coordinate {
-            let arCoords = elevationProfileAR.isEmpty ? [a, r] : elevationProfileAR.map(\.coordinate)
-            let rbCoords = elevationProfileRB.isEmpty ? [r, b] : elevationProfileRB.map(\.coordinate)
             let opacityAR = relocatingPoint == .pointA ? dimOpacity : activeOpacity
             let opacityRB = relocatingPoint == .pointB ? dimOpacity : activeOpacity
             mapLines = [
-                MapLine(id: "los-ar", coordinates: arCoords,
+                MapLine(id: "los-ar", coordinates: [a, r],
                         style: .los, opacity: relocatingPoint == .repeater ? dimOpacity : opacityAR),
-                MapLine(id: "los-rb", coordinates: rbCoords,
+                MapLine(id: "los-rb", coordinates: [r, b],
                         style: .los, opacity: relocatingPoint == .repeater ? dimOpacity : opacityRB)
             ]
         } else {
-            let coords = elevationProfile.isEmpty ? [a, b] : elevationProfile.map(\.coordinate)
             let opacity = relocatingPoint != nil ? dimOpacity : activeOpacity
-            mapLines = [MapLine(id: "los-ab", coordinates: coords, style: .los, opacity: opacity)]
+            mapLines = [MapLine(id: "los-ab", coordinates: [a, b], style: .los, opacity: opacity)]
         }
     }
 
