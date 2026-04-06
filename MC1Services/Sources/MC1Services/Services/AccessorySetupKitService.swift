@@ -49,9 +49,6 @@ public final class AccessorySetupKitService {
     /// Pending activation continuation
     private var activationContinuation: CheckedContinuation<Void, Error>?
 
-    /// Pending rename continuation
-    private var renameContinuation: CheckedContinuation<Void, Error>?
-
     public init() {}
 
     // MARK: - Continuation Safety
@@ -115,9 +112,6 @@ public final class AccessorySetupKitService {
             pairedAccessories = []
             pickerContinuation?.resume(throwing: AccessorySetupKitError.sessionInvalidated)
             pickerContinuation = nil
-            renameContinuation?.resume(throwing: AccessorySetupKitError.sessionInvalidated)
-            renameContinuation = nil
-
         case .accessoryAdded:
             if let accessory = event.accessory {
                 pairedAccessories = session?.accessories ?? []
@@ -142,11 +136,6 @@ public final class AccessorySetupKitService {
         case .accessoryChanged:
             pairedAccessories = session?.accessories ?? []
             logger.info("Accessory changed")
-            // Resume rename continuation if pending (rename triggers accessoryChanged)
-            if let continuation = renameContinuation {
-                renameContinuation = nil
-                continuation.resume()
-            }
 
         case .pickerDidPresent:
             logger.info("Picker presented")
@@ -294,27 +283,13 @@ public final class AccessorySetupKitService {
 
     /// Shows the system rename sheet for an accessory
     /// - Parameter accessory: The accessory to rename
-    /// Note: ASK's renameAccessory callback may not fire on success, only on error.
-    /// We handle success via the .accessoryChanged event instead.
     public func renameAccessory(_ accessory: ASAccessory) async throws {
         guard let session else {
             throw AccessorySetupKitError.sessionNotActive
         }
 
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            self.renameContinuation = continuation
-
-            session.renameAccessory(accessory) { [weak self] error in
-                guard let self else { return }
-                Task { @MainActor in
-                    // Only handle errors here - success is handled via .accessoryChanged event
-                    if let error {
-                        self.renameContinuation = nil
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
-        }
+        try await session.renameAccessory(accessory)
+        pairedAccessories = session.accessories
     }
 
     /// Find a paired accessory by its Bluetooth identifier
@@ -328,8 +303,6 @@ public final class AccessorySetupKitService {
         pickerContinuation = nil
         activationContinuation?.resume(throwing: AccessorySetupKitError.sessionInvalidated)
         activationContinuation = nil
-        renameContinuation?.resume(throwing: AccessorySetupKitError.sessionInvalidated)
-        renameContinuation = nil
         session?.invalidate()
         session = nil
         isSessionActive = false
@@ -373,7 +346,7 @@ public final class AccessorySetupKitService {
 
 // MARK: - Errors
 
-public enum AccessorySetupKitError: LocalizedError {
+public enum AccessorySetupKitError: LocalizedError, Sendable {
     case sessionNotActive
     case sessionInvalidated
     case pickerDismissed
@@ -439,7 +412,7 @@ public final class AccessorySetupKitService {
     public func invalidateSession() {}
 }
 
-public enum AccessorySetupKitError: LocalizedError {
+public enum AccessorySetupKitError: LocalizedError, Sendable {
     case sessionNotActive
     case sessionInvalidated
     case pickerDismissed
