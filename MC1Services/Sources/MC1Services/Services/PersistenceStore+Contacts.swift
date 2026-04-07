@@ -303,7 +303,8 @@ extension PersistenceStore {
     // MARK: - Contact Helper Methods
 
     /// Find contact display name by 4-byte or 6-byte public key prefix.
-    /// Returns nil if no matching contact found.
+    /// Searches across all devices — room message authors may only be known
+    /// from a previously-connected radio's contact list.
     public func findContactNameByKeyPrefix(_ prefix: Data) throws -> String? {
         // Fetch all contacts and filter by prefix match
         let contacts = try modelContext.fetch(FetchDescriptor<Contact>())
@@ -313,17 +314,9 @@ extension PersistenceStore {
         }?.displayName
     }
 
-    /// Find contact by 4-byte or 6-byte public key prefix.
-    /// Returns nil if no matching contact found.
-    public func findContactByKeyPrefix(_ prefix: Data) throws -> ContactDTO? {
-        let contacts = try modelContext.fetch(FetchDescriptor<Contact>())
-        let prefixLength = prefix.count
-        return contacts.first { contact in
-            contact.publicKey.prefix(prefixLength) == prefix
-        }.map { ContactDTO(from: $0) }
-    }
-
-    /// Find contact by 32-byte public key
+    /// Find contact by 32-byte public key.
+    /// Searches across all devices — used for routing hints where the contact
+    /// may exist under a different device's ID.
     public func findContactByPublicKey(_ publicKey: Data) throws -> ContactDTO? {
         let targetKey = publicKey
         let predicate = #Predicate<Contact> { contact in

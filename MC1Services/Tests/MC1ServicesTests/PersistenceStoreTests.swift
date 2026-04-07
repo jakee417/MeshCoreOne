@@ -879,6 +879,70 @@ struct PersistenceStoreTests {
         #expect(messages.count == 1)
     }
 
+    // MARK: - Duplicate Session Cleanup Tests
+
+    @Test("Cleanup duplicate remote node sessions keeps target and deletes others")
+    func cleanupDuplicateRemoteNodeSessions() async throws {
+        let store = try await createTestStore()
+        let device = createTestDevice()
+        try await store.saveDevice(device)
+
+        let sharedKey = Data((0..<ProtocolLimits.publicKeySize).map { _ in UInt8.random(in: 0...255) })
+
+        // Create two sessions with the same publicKey
+        let keepSession = RemoteNodeSessionDTO(
+            id: UUID(),
+            deviceID: device.id,
+            publicKey: sharedKey,
+            name: "KeepRoom",
+            role: .roomServer,
+            latitude: 0, longitude: 0,
+            isConnected: false,
+            permissionLevel: .guest,
+            lastSyncTimestamp: 0
+        )
+        let duplicateSession = RemoteNodeSessionDTO(
+            id: UUID(),
+            deviceID: device.id,
+            publicKey: sharedKey,
+            name: "DuplicateRoom",
+            role: .roomServer,
+            latitude: 0, longitude: 0,
+            isConnected: false,
+            permissionLevel: .guest,
+            lastSyncTimestamp: 0
+        )
+
+        try await store.saveRemoteNodeSessionDTO(keepSession)
+        try await store.saveRemoteNodeSessionDTO(duplicateSession)
+
+        // Add a room message to the duplicate session
+        let message = RoomMessageDTO(
+            sessionID: duplicateSession.id,
+            authorKeyPrefix: Data([0x01, 0x02, 0x03, 0x04]),
+            authorName: "Author",
+            text: "Message on duplicate",
+            timestamp: UInt32(Date().timeIntervalSince1970)
+        )
+        try await store.saveRoomMessage(message)
+
+        // Cleanup: keep one, delete the other
+        try await store.cleanupDuplicateRemoteNodeSessions(publicKey: sharedKey, keepID: keepSession.id)
+
+        // Kept session should still exist
+        let kept = try await store.fetchRemoteNodeSession(id: keepSession.id)
+        #expect(kept != nil)
+        #expect(kept?.name == "KeepRoom")
+
+        // Duplicate session should be gone
+        let deleted = try await store.fetchRemoteNodeSession(id: duplicateSession.id)
+        #expect(deleted == nil)
+
+        // Room messages of the duplicate should be gone
+        let messages = try await store.fetchRoomMessages(sessionID: duplicateSession.id)
+        #expect(messages.isEmpty)
+    }
+
     // MARK: - Badge Count Tests
 
     @Test("Get total unread counts")

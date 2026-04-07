@@ -147,13 +147,12 @@ extension PersistenceStore {
     /// Keeps the session with the specified ID and deletes any others.
     /// This prevents stale sessions from causing connection state issues.
     public func cleanupDuplicateRemoteNodeSessions(publicKey: Data, keepID: UUID) throws {
-        let descriptor = FetchDescriptor<RemoteNodeSession>()
-        let sessions = try modelContext.fetch(descriptor)
-
-        // Find sessions with matching public key but different ID
-        let duplicates = sessions.filter { session in
-            session.publicKey == publicKey && session.id != keepID
+        let targetKey = publicKey
+        let targetKeepID = keepID
+        let predicate = #Predicate<RemoteNodeSession> { session in
+            session.publicKey == targetKey && session.id != targetKeepID
         }
+        let duplicates = try modelContext.fetch(FetchDescriptor(predicate: predicate))
 
         if !duplicates.isEmpty {
             let logger = Logger(subsystem: "com.mc1", category: "PersistenceStore")
