@@ -132,7 +132,7 @@ private struct BehaviorSection: View {
                 .accessibilityValue(
                     viewModel.repeaterEnabled == nil
                         ? (viewModel.isLoadingBehavior ? L10n.RemoteNodes.RemoteNodes.Settings.loading : L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad)
-                        : (viewModel.repeaterEnabled == true ? "On" : "Off")
+                        : (viewModel.repeaterEnabled == true ? L10n.Localizable.Accessibility.on : L10n.Localizable.Accessibility.off)
                 )
                 .overlay(alignment: .trailing) {
                     if viewModel.repeaterEnabled == nil {

@@ -73,8 +73,8 @@ struct ContactQRShareSheet: View {
 
     private var shareText: String {
         """
-        MeshCore One Contact: \(contactName)
-        Key: \(publicKey.hexString().lowercased())
+        \(L10n.Contacts.Contacts.Share.contactLabel(contactName))
+        \(L10n.Contacts.Contacts.Share.keyLabel(publicKey.hexString().lowercased()))
         \(contactURI)
         """
     }

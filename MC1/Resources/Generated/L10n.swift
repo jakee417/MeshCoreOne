@@ -1628,6 +1628,10 @@ public enum L10n {
         /// Location: ScanContactQRView.swift - Purpose: Navigation title
         public static let title = L10n.tr("Contacts", "contacts.scan.title", fallback: "Scan QR Code")
         public enum Error {
+          /// Location: ScanContactQRView.swift - Purpose: Contact import failed, %@ is the error description
+          public static func importFailed(_ p1: Any) -> String {
+            return L10n.tr("Contacts", "contacts.scan.error.importFailed", String(describing: p1), fallback: "Failed to import contact: %@")
+          }
           /// Location: ScanContactQRView.swift - Purpose: Invalid QR format error
           public static let invalidFormat = L10n.tr("Contacts", "contacts.scan.error.invalidFormat", fallback: "Invalid QR code format")
           /// Location: ScanContactQRView.swift - Purpose: Invalid public key error
@@ -1655,6 +1659,16 @@ public enum L10n {
         public static let favorites = L10n.tr("Contacts", "contacts.segment.favorites", fallback: "Favorites")
         /// Location: ContactsViewModel.swift - Purpose: Network segment
         public static let network = L10n.tr("Contacts", "contacts.segment.network", fallback: "Network")
+      }
+      public enum Share {
+        /// Location: ContactQRShareSheet.swift - Purpose: Contact label in share text, %@ is contact name
+        public static func contactLabel(_ p1: Any) -> String {
+          return L10n.tr("Contacts", "contacts.share.contactLabel", String(describing: p1), fallback: "MeshCore One Contact: %@")
+        }
+        /// Location: ContactQRShareSheet.swift - Purpose: Key label in share text, %@ is hex public key
+        public static func keyLabel(_ p1: Any) -> String {
+          return L10n.tr("Contacts", "contacts.share.keyLabel", String(describing: p1), fallback: "Key: %@")
+        }
       }
       public enum Sort {
         /// Location: ContactsViewModel.swift - Purpose: Distance sort option
@@ -2155,6 +2169,10 @@ public enum L10n {
         public static let message = L10n.tr("Onboarding", "deviceScan.demoModeAlert.message", fallback: "You can now continue without a device. Toggle demo mode in Settings anytime.")
         /// Location: DeviceScanView.swift - Alert title when demo mode is unlocked
         public static let title = L10n.tr("Onboarding", "deviceScan.demoModeAlert.title", fallback: "Demo Mode Unlocked")
+      }
+      public enum Error {
+        /// Location: DeviceScanView.swift - Authentication failed alert message
+        public static let authenticationFailed = L10n.tr("Onboarding", "deviceScan.error.authenticationFailed", fallback: "Authentication failed. The device was added but couldn't connect — this usually means the wrong PIN was entered.")
       }
       public enum Instruction {
         /// Location: DeviceScanView.swift - Instruction step 4
@@ -4328,6 +4346,18 @@ public enum L10n {
         public enum RepeaterTarget {
           /// Location: LOSRepeaterTargetPinView.swift - Accessibility hint for repeater target
           public static let accessibilityHint = L10n.tr("Tools", "tools.lineOfSight.repeaterTarget.accessibilityHint", fallback: "Repeater placement marker")
+        }
+        public enum Status {
+          /// Location: ClearanceStatusView.swift, ResultsCardView.swift - Clearance status: blocked
+          public static let blocked = L10n.tr("Tools", "tools.lineOfSight.status.blocked", fallback: "Blocked")
+          /// Location: ResultsCardView.swift - Subtitle shown when path is blocked
+          public static let blockedSubtitle = L10n.tr("Tools", "tools.lineOfSight.status.blockedSubtitle", fallback: "Direct path intersects terrain")
+          /// Location: ClearanceStatusView.swift, ResultsCardView.swift - Clearance status: clear
+          public static let clear = L10n.tr("Tools", "tools.lineOfSight.status.clear", fallback: "Clear")
+          /// Location: ClearanceStatusView.swift, ResultsCardView.swift - Clearance status: marginal
+          public static let marginal = L10n.tr("Tools", "tools.lineOfSight.status.marginal", fallback: "Marginal")
+          /// Location: ClearanceStatusView.swift, ResultsCardView.swift - Clearance status: partial obstruction
+          public static let partialObstruction = L10n.tr("Tools", "tools.lineOfSight.status.partialObstruction", fallback: "Partial obstruction")
         }
       }
       public enum NodeDiscovery {

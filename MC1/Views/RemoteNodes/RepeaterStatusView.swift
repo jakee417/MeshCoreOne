@@ -410,7 +410,7 @@ private struct NeighborRow: View {
                 Image(systemName: "cellularbars", variableValue: snrLevel)
                     .foregroundStyle(snrColor)
 
-                Text("SNR \(neighbor.snr.formatted(.number.precision(.fractionLength(1))))dB")
+                Text(L10n.RemoteNodes.RemoteNodes.Status.snrFormat(neighbor.snr.formatted(.number.precision(.fractionLength(1)))))
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
@@ -464,7 +464,7 @@ private struct DisappearedNeighborRow: View {
                     .font(.caption2)
             }
             Spacer()
-            Text("SNR \(neighbor.snr.formatted(.number.precision(.fractionLength(1))))dB")
+            Text(L10n.RemoteNodes.RemoteNodes.Status.snrFormat(neighbor.snr.formatted(.number.precision(.fractionLength(1)))))
                 .font(.caption)
         }
         .foregroundStyle(.tertiary)

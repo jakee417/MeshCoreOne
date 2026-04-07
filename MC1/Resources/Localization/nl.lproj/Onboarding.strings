@@ -132,6 +132,8 @@
 /* Location: DeviceScanView.swift - Alert message for demo mode */
 "deviceScan.demoModeAlert.message" = "Je kunt nu doorgaan zonder apparaat. Schakel demomodus op elk moment uit via Instellingen.";
 
+/* Location: DeviceScanView.swift - Authentication failed alert message */
+"deviceScan.error.authenticationFailed" = "Authentication failed. The device was added but couldn't connect — this usually means the wrong PIN was entered.";
 
 // MARK: - Troubleshooting Sheet
 

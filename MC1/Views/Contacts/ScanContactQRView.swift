@@ -230,11 +230,11 @@ struct ScanContactQRView: View {
             onScan(contact.name, contact.publicKey)
         } catch ContactServiceError.contactTableFull {
             logger.error("Node list is full")
-            errorMessage = "Node list is full (max \(maxContacts) nodes)"
+            errorMessage = L10n.Contacts.Contacts.Add.Error.nodeListFull(Int(maxContacts))
             isImporting = false
         } catch {
             logger.error("Failed to import contact: \(error.localizedDescription)")
-            errorMessage = "Failed to import contact: \(error.localizedDescription)"
+            errorMessage = L10n.Contacts.Contacts.Scan.Error.importFailed(error.localizedDescription)
             isImporting = false
         }
     }

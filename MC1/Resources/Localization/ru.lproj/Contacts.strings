@@ -459,6 +459,12 @@
 /* Location: ContactQRShareSheet.swift - Purpose: Share button */
 "contacts.qr.share" = "Поделиться";
 
+/* Location: ContactQRShareSheet.swift - Purpose: Contact label in share text, %@ is contact name */
+"contacts.share.contactLabel" = "MeshCore One Contact: %@";
+
+/* Location: ContactQRShareSheet.swift - Purpose: Key label in share text, %@ is hex public key */
+"contacts.share.keyLabel" = "Key: %@";
+
 // MARK: - Scan Contact QR
 
 /* Location: ScanContactQRView.swift - Purpose: Navigation title */
@@ -490,6 +496,9 @@
 
 /* Location: ScanContactQRView.swift - Purpose: Invalid public key error */
 "contacts.scan.error.invalidKey" = "Неверный QR-код: недействительный публичный ключ";
+
+/* Location: ScanContactQRView.swift - Purpose: Contact import failed, %@ is the error description */
+"contacts.scan.error.importFailed" = "Failed to import contact: %@";
 
 // MARK: - Discovery View
 

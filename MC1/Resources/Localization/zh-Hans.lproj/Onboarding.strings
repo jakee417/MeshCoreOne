@@ -130,6 +130,9 @@
 /* Location: DeviceScanView.swift - Alert message for demo mode */
 "deviceScan.demoModeAlert.message" = "您现在可以无需设备继续。随时在设置中切换演示模式。";
 
+/* Location: DeviceScanView.swift - Authentication failed alert message */
+"deviceScan.error.authenticationFailed" = "Authentication failed. The device was added but couldn't connect — this usually means the wrong PIN was entered.";
+
 // MARK: - Troubleshooting Sheet
 
 /* Location: DeviceScanView.swift - Navigation title for troubleshooting sheet */

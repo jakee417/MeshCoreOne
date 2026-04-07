@@ -115,7 +115,7 @@ private struct RoomAccessSection: View {
                 .accessibilityValue(
                     viewModel.allowReadOnly == nil
                         ? (viewModel.isLoadingRoomAccess ? L10n.RemoteNodes.RemoteNodes.Settings.loading : L10n.RemoteNodes.RemoteNodes.Settings.failedToLoad)
-                        : (viewModel.allowReadOnly == true ? "On" : "Off")
+                        : (viewModel.allowReadOnly == true ? L10n.Localizable.Accessibility.on : L10n.Localizable.Accessibility.off)
                 )
                 .overlay(alignment: .trailing) {
                     if viewModel.allowReadOnly == nil {

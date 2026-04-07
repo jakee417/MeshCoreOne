@@ -238,7 +238,7 @@ struct DeviceScanView: View {
                 // ASK pairing succeeded but BLE connection failed (e.g., wrong PIN)
                 // Use AppState's alert mechanism for consistent UX
                 appState.connectionUI.failedPairingDeviceID = pairingError.deviceID
-                appState.connectionUI.connectionFailedMessage = "Authentication failed. The device was added but couldn't connect — this usually means the wrong PIN was entered."
+                appState.connectionUI.connectionFailedMessage = L10n.Onboarding.DeviceScan.Error.authenticationFailed
                 appState.connectionUI.showingConnectionFailedAlert = true
             } catch {
                 // Other errors - show via AppState's alert
