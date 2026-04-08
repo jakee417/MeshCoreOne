@@ -179,9 +179,15 @@ private struct ScanConfirmationContent: View {
                     }
                 }
                 .disabled(isJoining)
+                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
 
-                Button(L10n.Chats.Chats.ScanQR.scanAgain, action: onScanAgain)
-                    .foregroundStyle(.secondary)
+                Button(action: onScanAgain) {
+                    HStack {
+                        Spacer()
+                        Text(L10n.Chats.Chats.ScanQR.scanAgain)
+                        Spacer()
+                    }
+                }
             }
         }
     }
