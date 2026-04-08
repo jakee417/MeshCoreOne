@@ -9,11 +9,13 @@ MeshCore-references/
 
 # AI
 .claude
+.agent
 .ignore
 CLAUDE.md
 AGENTS.md
 thoughts/
 plans/
+specs/
 tmp/
 .xcodebuildmcp/
 
