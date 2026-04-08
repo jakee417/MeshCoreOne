@@ -10,16 +10,11 @@ struct ScanChannelQRView: View {
     let availableSlots: [UInt8]
     let onComplete: (ChannelDTO?) -> Void
 
-    @State private var scannedChannel: ScannedChannel?
+    @State private var scannedChannel: MeshCoreURLParser.ChannelResult?
     @State private var selectedSlot: UInt8
     @State private var isJoining = false
     @State private var errorMessage: String?
     @State private var cameraPermissionDenied = false
-
-    struct ScannedChannel {
-        let name: String
-        let secret: Data
-    }
 
     init(availableSlots: [UInt8], onComplete: @escaping (ChannelDTO?) -> Void) {
         self.availableSlots = availableSlots
@@ -56,26 +51,11 @@ struct ScanChannelQRView: View {
     // MARK: - Private Methods
 
     private func handleScanResult(_ result: String) {
-        // Parse URL: meshcore://channel/add?name=<name>&secret=<hex>
-        guard let url = URL(string: result),
-              url.scheme == "meshcore",
-              url.host == "channel",
-              url.path == "/add",
-              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let queryItems = components.queryItems else {
+        guard let parsed = MeshCoreURLParser.parseChannelURL(result) else {
             errorMessage = L10n.Chats.Chats.ScanQR.Error.invalidFormat
             return
         }
-
-        let name = queryItems.first(where: { $0.name == "name" })?.value ?? ""
-        let secretHex = queryItems.first(where: { $0.name == "secret" })?.value ?? ""
-
-        guard !name.isEmpty, let secret = Data(hexString: secretHex), secret.count == 16 else {
-            errorMessage = L10n.Chats.Chats.ScanQR.Error.invalidData
-            return
-        }
-
-        scannedChannel = ScannedChannel(name: name, secret: secret)
+        scannedChannel = parsed
     }
 
     private func joinChannel() async {
@@ -159,7 +139,7 @@ private struct ScannerContent: View {
 }
 
 private struct ScanConfirmationContent: View {
-    let scannedChannel: ScanChannelQRView.ScannedChannel
+    let scannedChannel: MeshCoreURLParser.ChannelResult
     let isJoining: Bool
     let errorMessage: String?
     let onJoin: () -> Void
