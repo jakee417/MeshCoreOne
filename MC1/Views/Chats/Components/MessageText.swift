@@ -195,10 +195,9 @@ struct MessageText: View {
         for hashtag in hashtags.reversed() {
             guard let attrRange = Range(hashtag.range, in: attributedString) else { continue }
 
-            // Create a custom URL scheme for hashtag taps
-            // Format: pocketmesh-hashtag://channelname
+            // Format: meshcoreone://hashtag/channelname
             let channelName = HashtagUtilities.normalizeHashtagName(hashtag.name)
-            if let url = URL(string: "pocketmesh-hashtag://\(channelName)") {
+            if let url = URL(string: "meshcoreone://hashtag/\(channelName)") {
                 attributedString[attrRange].link = url
                 // Hashtags: bold + cyan (or white on dark bubbles), no underline
                 // This distinguishes them from URLs which remain underlined

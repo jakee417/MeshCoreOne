@@ -93,10 +93,11 @@ struct HashtagChannelNavigationTests {
     @Test("URL scheme encodes and decodes channel name correctly")
     func testURLSchemeRoundTrip() {
         let channelName = "general"
-        let url = URL(string: "pocketmesh-hashtag://\(channelName)")
+        let url = URL(string: "meshcoreone://hashtag/\(channelName)")
 
-        #expect(url?.scheme == "pocketmesh-hashtag")
-        #expect(url?.host == channelName)
+        #expect(url?.scheme == "meshcoreone")
+        #expect(url?.host == "hashtag")
+        #expect(url?.pathComponents.dropFirst().first == channelName)
     }
 
     // MARK: - Helpers

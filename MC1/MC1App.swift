@@ -88,7 +88,7 @@ struct MC1App: App {
                     await runInitialForegroundReconciliationIfNeeded()
                 }
                 .onOpenURL { _ in
-                    // pocketmesh://status — tapped from Live Activity
+                    // meshcoreone://status — tapped from Live Activity
                     // Opening the app is sufficient; future: navigate based on url.host
                 }
                 .onChange(of: scenePhase) { oldPhase, newPhase in

@@ -92,7 +92,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>pocketmesh</string>
+				<string>meshcoreone</string>
 			</array>
 		</dict>
 	</array>
