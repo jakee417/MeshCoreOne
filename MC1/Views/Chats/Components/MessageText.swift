@@ -68,6 +68,8 @@ struct MessageText: View {
 
         applyHashtagFormatting(&result, isOutgoing: isOutgoing, urlRanges: urlRanges, currentString: currentString)
 
+        applyMeshCoreLinkFormatting(&result, baseColor: baseColor, urlRanges: urlRanges, currentString: currentString)
+
         return result
     }
 
@@ -179,6 +181,45 @@ struct MessageText: View {
         }
 
         return (urlRanges, currentString)
+    }
+
+    // MARK: - MeshCore Link Formatting
+
+    private static let meshCoreLinkRegex = try? NSRegularExpression(pattern: #"meshcore://[^\s<>"]+"#)
+
+    private static func applyMeshCoreLinkFormatting(
+        _ attributedString: inout AttributedString,
+        baseColor: Color,
+        urlRanges: [Range<String.Index>],
+        currentString: String
+    ) {
+        guard let regex = meshCoreLinkRegex else { return }
+
+        let nsRange = NSRange(currentString.startIndex..., in: currentString)
+        let matches = regex.matches(in: currentString, range: nsRange)
+
+        for match in matches.reversed() {
+            guard var matchRange = Range(match.range, in: currentString) else { continue }
+
+            // Strip trailing punctuation the regex may over-capture
+            while let last = currentString[matchRange].last, ".,;:!?)".contains(last) {
+                matchRange = matchRange.lowerBound..<currentString.index(before: matchRange.upperBound)
+                if matchRange.isEmpty { break }
+            }
+            if matchRange.isEmpty { continue }
+
+            // Skip ranges already covered by the URL pass
+            let overlapsWithURL = urlRanges.contains { $0.overlaps(matchRange) }
+            if overlapsWithURL { continue }
+
+            guard let attrRange = Range(matchRange, in: attributedString),
+                  let url = URL(string: String(currentString[matchRange])),
+                  url.host() == "contact" else { continue }
+
+            attributedString[attrRange].link = url
+            attributedString[attrRange].foregroundColor = baseColor
+            attributedString[attrRange].underlineStyle = .single
+        }
     }
 
     // MARK: - Hashtag Formatting

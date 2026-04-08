@@ -28,6 +28,7 @@ struct ChatsView: View {
     @State private var pendingChatContact: ContactDTO?
     @State private var pendingChannel: ChannelDTO?
     @State private var hashtagToJoin: HashtagJoinRequest?
+    @State private var pendingContactLink: MeshCoreURLParser.ContactResult?
     private var shouldUseSplitView: Bool {
         horizontalSizeClass == .regular
     }
@@ -111,15 +112,18 @@ struct ChatsView: View {
             }
         }
         .environment(\.openURL, OpenURLAction { url in
-            guard url.scheme == HashtagDeeplinkSupport.scheme else {
-                return .systemAction
-            }
-            guard let channelName = HashtagDeeplinkSupport.channelNameFromURL(url) else {
+            if url.scheme == MeshCoreURLParser.scheme {
+                handleMeshCoreLink(url)
+                return .handled
+            } else if url.scheme == HashtagDeeplinkSupport.scheme,
+                      let channelName = HashtagDeeplinkSupport.channelNameFromURL(url) {
+                handleHashtagTap(name: channelName)
+                return .handled
+            } else if url.scheme == HashtagDeeplinkSupport.scheme {
                 chatsViewLogger.error("Hashtag URL missing host: \(url.absoluteString, privacy: .public)")
                 return .handled
             }
-            handleHashtagTap(name: channelName)
-            return .handled
+            return .systemAction
         })
         .sheet(item: $hashtagToJoin) { request in
             JoinHashtagFromMessageView(channelName: request.id) { channel in
@@ -129,6 +133,15 @@ struct ChatsView: View {
                 }
             }
             .presentationDetents([.medium])
+        }
+        .sheet(item: $pendingContactLink) { result in
+            AddContactConfirmationSheet(contactResult: result) { addedContact in
+                pendingContactLink = nil
+                if let addedContact {
+                    appState.navigation.navigateToContactDetail(addedContact)
+                }
+            }
+            .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showingNewChat, onDismiss: {
             if let contact = pendingChatContact {
@@ -368,6 +381,29 @@ struct ChatsView: View {
         guard let session = appState.navigation.pendingRoomSession else { return }
         navigate(to: .room(session))
         appState.navigation.clearPendingRoomNavigation()
+    }
+
+    private func handleMeshCoreLink(_ url: URL) {
+        Task {
+            guard let result = MeshCoreURLParser.parseContactURL(url.absoluteString) else {
+                chatsViewLogger.error("Failed to parse meshcore URL: \(url.absoluteString, privacy: .public)")
+                return
+            }
+
+            if result.publicKey == appState.connectedDevice?.publicKey {
+                return
+            }
+
+            if let deviceID = appState.currentDeviceID,
+               let existingContact = try? await appState.offlineDataStore?.fetchContact(
+                   deviceID: deviceID,
+                   publicKey: result.publicKey
+               ) {
+                appState.navigation.navigateToContactDetail(existingContact)
+            } else {
+                pendingContactLink = result
+            }
+        }
     }
 
     private func handleHashtagTap(name: String) {

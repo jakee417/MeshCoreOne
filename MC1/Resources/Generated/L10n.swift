@@ -949,6 +949,8 @@ public enum L10n {
         }
         /// Location: AddContactSheet.swift - Purpose: Name section header
         public static let name = L10n.tr("Contacts", "contacts.add.name", fallback: "Name")
+        /// Add Node
+        public static let nodeTitle = L10n.tr("Contacts", "contacts.add.nodeTitle", fallback: "Add Node")
         /// Location: AddContactSheet.swift - Purpose: Paste URL button label
         public static let pasteURL = L10n.tr("Contacts", "contacts.add.pasteURL", fallback: "Paste Contact URL")
         /// Location: AddContactSheet.swift - Purpose: Paste URL section footer

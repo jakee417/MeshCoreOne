@@ -4,6 +4,8 @@ import MC1Services
 /// Parses meshcore:// deep link URLs for channel and contact imports.
 enum MeshCoreURLParser {
 
+    static let scheme = "meshcore"
+
     /// Parsed channel data from a meshcore://channel/add URL
     struct ChannelResult {
         let name: String
@@ -11,10 +13,12 @@ enum MeshCoreURLParser {
     }
 
     /// Parsed contact data from a meshcore://contact/add URL
-    struct ContactResult {
+    struct ContactResult: Identifiable {
         let name: String
         let publicKey: Data
         let contactType: ContactType
+
+        var id: String { publicKey.hexString() }
     }
 
     /// Parses a meshcore://channel/add URL string.

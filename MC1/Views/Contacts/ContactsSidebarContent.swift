@@ -192,7 +192,7 @@ struct ContactsSidebarContent: View {
                 appState.navigation.clearPendingDiscoveryNavigation()
             }
         }
-        .onChange(of: appState.navigation.pendingContactDetail) { _, contact in
+        .onChange(of: appState.navigation.pendingContactDetail, initial: true) { _, contact in
             guard let contact else { return }
 
             if shouldUseSplitView {

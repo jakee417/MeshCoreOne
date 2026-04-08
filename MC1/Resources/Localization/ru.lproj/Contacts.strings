@@ -387,6 +387,7 @@
 
 /* Location: AddContactSheet.swift - Purpose: Navigation title */
 "contacts.add.title" = "Добавить контакт";
+"contacts.add.nodeTitle" = "Добавить узел";
 
 /* Location: AddContactSheet.swift - Purpose: Add button */
 "contacts.add.add" = "Добавить";
