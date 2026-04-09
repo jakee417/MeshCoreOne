@@ -37,6 +37,7 @@ struct TelemetryHistoryView: View {
                 }
             }
         }
+        .chartScrubbingScrollLock()
         .navigationTitle(L10n.RemoteNodes.RemoteNodes.Status.telemetry)
         .liquidGlassToolbarBackground()
         .task {

@@ -1,7 +1,5 @@
 import MC1Services
 
-// MARK: - Supporting Types
-
 struct ChannelGroup: Identifiable {
     let channel: Int
     let charts: [TelemetryChartGroup]

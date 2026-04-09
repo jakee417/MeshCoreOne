@@ -35,6 +35,7 @@ struct TelemetryHistoryOverviewView: View {
                 retentionFooter
             }
         }
+        .chartScrubbingScrollLock()
         .navigationTitle(L10n.RemoteNodes.RemoteNodes.History.overviewTitle)
         .liquidGlassToolbarBackground()
         .task {

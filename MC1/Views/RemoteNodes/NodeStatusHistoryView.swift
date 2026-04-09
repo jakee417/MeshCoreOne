@@ -92,6 +92,7 @@ struct NodeStatusHistoryView: View {
                 Text(L10n.RemoteNodes.RemoteNodes.History.retentionNotice)
             }
         }
+        .chartScrubbingScrollLock()
         .navigationTitle(L10n.RemoteNodes.RemoteNodes.History.title)
         .liquidGlassToolbarBackground()
         .task {
