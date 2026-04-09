@@ -77,7 +77,7 @@ struct LPPDataPointDisplayTests {
     func voltageFormattedValueIncludesVSuffix() {
         let dataPoint = LPPDataPoint(channel: 0, type: .voltage, value: .float(3.85))
 
-        #expect(dataPoint.formattedValue == "\(3.85.formatted(.number.precision(.fractionLength(2)))) V")
+        #expect(dataPoint.formattedValue == "\(3.85.formatted(.number.precision(.fractionLength(3)))) V")
     }
 
     @Test("Temperature formatted value includes degree symbol")

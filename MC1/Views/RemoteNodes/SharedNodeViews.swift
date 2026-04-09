@@ -69,7 +69,7 @@ struct NodeCommonStatusRows: View {
             label: L10n.RemoteNodes.RemoteNodes.Status.battery,
             value: helper.batteryDisplay,
             delta: helper.batteryDeltaMV.map { Double($0) / 1000.0 },
-            higherIsBetter: true, unit: " V", fractionDigits: 2
+            higherIsBetter: true, unit: " V", fractionDigits: 3
         )
 
         LabeledContent(L10n.RemoteNodes.RemoteNodes.Status.uptime, value: helper.uptimeDisplay)

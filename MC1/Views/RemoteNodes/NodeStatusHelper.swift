@@ -306,7 +306,7 @@ final class NodeStatusHelper {
         let volts = Double(mv) / 1000.0
         let battery = BatteryInfo(level: Int(mv))
         let percent = battery.percentage(using: ocvValues)
-        return "\(volts.formatted(.number.precision(.fractionLength(2))))V (\(percent)%)"
+        return "\(volts.formatted(.number.precision(.fractionLength(3))))V (\(percent)%)"
     }
 
     var lastRSSIDisplay: String {
