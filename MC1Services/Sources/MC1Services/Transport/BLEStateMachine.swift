@@ -689,7 +689,7 @@ public actor BLEStateMachine: BLEStateMachineProtocol {
         autoReconnectDiscoveryTimeoutTask = Task {
             try? await Task.sleep(for: .seconds(autoReconnectDiscoveryTimeout))
             guard !Task.isCancelled else { return }
-            await handleAutoReconnectDiscoveryTimeout(
+            handleAutoReconnectDiscoveryTimeout(
                 for: peripheral,
                 generation: generation
             )
@@ -771,7 +771,7 @@ public actor BLEStateMachine: BLEStateMachineProtocol {
             // Create timeout task
             let timeoutTask = Task {
                 try? await Task.sleep(for: .seconds(connectionTimeout))
-                await self.handleConnectionTimeout(for: peripheral)
+                self.handleConnectionTimeout(for: peripheral)
             }
 
             phase = .connecting(
@@ -868,7 +868,7 @@ extension BLEStateMachine {
                     bluetoothPowerOffGraceTask = Task {
                         try? await Task.sleep(for: .seconds(1))
                         guard !Task.isCancelled else { return }
-                        await self.handleBluetoothPowerOffGraceExpired()
+                        self.handleBluetoothPowerOffGraceExpired()
                     }
                 }
             } else {
@@ -991,7 +991,7 @@ extension BLEStateMachine {
         serviceDiscoveryTimeoutTask = Task {
             try? await Task.sleep(for: .seconds(serviceDiscoveryTimeout))
             guard !Task.isCancelled else { return }
-            await handleServiceDiscoveryTimeout(for: peripheral)
+            handleServiceDiscoveryTimeout(for: peripheral)
         }
 
         transition(to: .discoveringServices(

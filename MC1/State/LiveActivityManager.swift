@@ -316,6 +316,9 @@ public final class LiveActivityManager {
                 case .active:
                     break
 
+                case .pending:
+                    break
+
                 @unknown default:
                     break
                 }
@@ -422,6 +425,8 @@ public final class LiveActivityManager {
         case .dismissed:
             clearActivityReference()
         case .active, .stale:
+            break
+        case .pending:
             break
         @unknown default:
             break

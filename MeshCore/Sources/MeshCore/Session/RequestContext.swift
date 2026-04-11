@@ -103,7 +103,7 @@ public actor PendingRequests {
             // Schedule timeout
             Task {
                 try? await Task.sleep(for: .seconds(timeout))
-                await self.timeout(tag: tag)
+                self.timeout(tag: tag)
             }
         }
     }

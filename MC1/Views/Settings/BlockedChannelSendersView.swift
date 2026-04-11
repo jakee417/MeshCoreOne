@@ -86,7 +86,7 @@ struct BlockedChannelSendersView: View {
                 deviceID: deviceID,
                 dataStore: services.dataStore
             )
-            await services.syncCoordinator.notifyConversationsChanged()
+            services.syncCoordinator.notifyConversationsChanged()
         }
     }
 }

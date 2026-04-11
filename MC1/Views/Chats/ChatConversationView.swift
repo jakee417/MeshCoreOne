@@ -648,13 +648,13 @@ struct ChatConversationView: View {
         )
 
         if !contactIDs.isEmpty {
-            await services.syncCoordinator.notifyContactsChanged()
+            services.syncCoordinator.notifyContactsChanged()
         }
 
         if case .channel(let channel) = conversationType {
             await chatViewModel.loadChannelMessages(for: channel)
         }
-        await services.syncCoordinator.notifyConversationsChanged()
+        services.syncCoordinator.notifyConversationsChanged()
     }
 }
 

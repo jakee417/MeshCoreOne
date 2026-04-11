@@ -312,7 +312,7 @@ public actor SettingsService {
     /// Only one active subscriber is supported. Subsequent calls replace the previous subscriber.
     public func events() -> AsyncStream<SettingsEvent> {
         AsyncStream { continuation in
-            Task { await self.setContinuation(continuation) }
+            Task { self.setContinuation(continuation) }
             continuation.onTermination = { @Sendable _ in
                 Task { await self.clearContinuation() }
             }

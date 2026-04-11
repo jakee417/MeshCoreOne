@@ -121,7 +121,7 @@ public actor MeshCoreSession: MeshCoreSessionProtocol {
             // Yield current state immediately
             continuation.yield(_connectionState)
             // Store continuation for future updates
-            Task { await self.addConnectionStateContinuation(id: id, continuation: continuation) }
+            Task { self.addConnectionStateContinuation(id: id, continuation: continuation) }
             continuation.onTermination = { _ in
                 Task { await self.removeConnectionStateContinuation(id: id) }
             }

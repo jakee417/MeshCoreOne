@@ -415,7 +415,7 @@ private struct DeviceRow: View {
 
             Spacer()
 
-            if let signalTier {
+            if signalTier != nil {
                 Image(systemName: "cellularbars", variableValue: signalLevel)
                     .foregroundStyle(signalColor)
                     .font(.body)

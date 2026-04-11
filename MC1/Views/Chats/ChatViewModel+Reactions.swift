@@ -7,8 +7,8 @@ extension ChatViewModel {
 
     /// Send a reaction emoji to a message (channel or DM)
     func sendReaction(emoji: String, to message: MessageDTO) async {
-        guard let reactionService = appState?.services?.reactionService,
-              let messageService,
+        guard appState?.services?.reactionService != nil,
+              messageService != nil,
               let dataStore else {
             return
         }
