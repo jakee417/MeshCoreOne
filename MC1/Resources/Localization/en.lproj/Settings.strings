@@ -1544,12 +1544,6 @@
 /* Import subtitle when the backup had nothing new to add */
 "settings.backup.import.nothing_to_import.subtitle" = "This backup's contents are already on this device.";
 
-/* Backup tip title */
-"settings.backup.tip.title" = "Switching apps?";
-
-/* Backup tip message */
-"settings.backup.tip.message" = "Back up your data before installing a new version to keep your messages, contacts, and settings.";
-
 /* Default filename for an exported backup; %@ is an ISO-style timestamp */
 "settings.backup.export.default_filename" = "MC1 Backup %@.mc1backup";
 

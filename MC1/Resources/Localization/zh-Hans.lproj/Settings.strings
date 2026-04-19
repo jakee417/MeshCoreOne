@@ -1513,12 +1513,6 @@
 /* Import subtitle when the backup had nothing new to add */
 "settings.backup.import.nothing_to_import.subtitle" = "此备份的内容已在此设备上。";
 
-/* Backup tip title */
-"settings.backup.tip.title" = "要切换应用？";
-
-/* Backup tip message */
-"settings.backup.tip.message" = "安装新版本前请先备份数据，以保留您的消息、联系人和设置。";
-
 /* Default filename for an exported backup; %@ is an ISO-style timestamp */
 "settings.backup.export.default_filename" = "MC1 备份 %@.mc1backup";
 

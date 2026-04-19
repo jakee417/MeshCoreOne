@@ -1,6 +1,5 @@
 import SwiftUI
 import MC1Services
-import TipKit
 
 struct BackupRestoreView: View {
     @Environment(\.appState) private var appState
@@ -52,9 +51,6 @@ struct BackupRestoreView: View {
             contentType: .mc1Backup,
             defaultFilename: viewModel.defaultExportFilename
         ) { result in
-            if case .success = result {
-                BackupTip.exportCompleted.sendDonation()
-            }
             viewModel.handleExportResult(result)
         }
         .fileImporter(

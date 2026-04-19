@@ -1539,12 +1539,6 @@
 /* Import subtitle when the backup had nothing new to add */
 "settings.backup.import.nothing_to_import.subtitle" = "Zawartość tej kopii zapasowej jest już na tym urządzeniu.";
 
-/* Backup tip title */
-"settings.backup.tip.title" = "Zmieniasz aplikację?";
-
-/* Backup tip message */
-"settings.backup.tip.message" = "Utwórz kopię zapasową danych przed instalacją nowej wersji, aby zachować wiadomości, kontakty i ustawienia.";
-
 /* Default filename for an exported backup; %@ is an ISO-style timestamp */
 "settings.backup.export.default_filename" = "Kopia zapasowa MC1 %@.mc1backup";
 

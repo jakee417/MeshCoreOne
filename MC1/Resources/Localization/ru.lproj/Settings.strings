@@ -1539,12 +1539,6 @@
 /* Import subtitle when the backup had nothing new to add */
 "settings.backup.import.nothing_to_import.subtitle" = "Содержимое этой резервной копии уже есть на этом устройстве.";
 
-/* Backup tip title */
-"settings.backup.tip.title" = "Меняете приложение?";
-
-/* Backup tip message */
-"settings.backup.tip.message" = "Сделайте резервную копию данных перед установкой новой версии, чтобы сохранить сообщения, контакты и настройки.";
-
 /* Default filename for an exported backup; %@ is an ISO-style timestamp */
 "settings.backup.export.default_filename" = "Резервная копия MC1 %@.mc1backup";
 

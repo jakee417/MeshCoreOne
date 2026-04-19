@@ -39,7 +39,6 @@ private struct SettingsListContent: View {
     @Binding var showingDeviceSelection: Bool
     @Bindable var demoModeManager: DemoModeManager
     private let liveActivityTip = LiveActivityTip()
-    private let backupTip = BackupTip()
 
     var body: some View {
         List {
@@ -97,8 +96,6 @@ private struct SettingsListContent: View {
                 } label: {
                     TintedLabel(L10n.Settings.OfflineMaps.title, systemImage: "map.fill")
                 }
-
-                TipView(backupTip, arrowEdge: .bottom)
 
                 NavigationLink {
                     BackupRestoreView(

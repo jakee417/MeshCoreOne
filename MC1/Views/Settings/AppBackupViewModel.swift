@@ -1,7 +1,6 @@
 import Foundation
 import MC1Services
 import os
-import TipKit
 
 /// Import flow state. Collapsing the five overlapping booleans the view
 /// model used to carry into a single enum makes invalid combinations
@@ -204,10 +203,6 @@ final class AppBackupViewModel {
                         )
                     }
                 }
-                // Donate to BackupTip so a restored install doesn't re-show the export prompt.
-                // TipKit's own donation store is wiped on reinstall, so the donation in the
-                // export path doesn't survive; donating again here covers the reinstall+restore path.
-                BackupTip.exportCompleted.sendDonation()
             } catch is CancellationError {
                 // Rollback is guaranteed by the `defer` in `importBackupDatabase`.
                 // Surface a terminal cancelled state so the user sees that nothing

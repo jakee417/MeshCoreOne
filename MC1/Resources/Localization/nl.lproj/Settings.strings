@@ -1539,12 +1539,6 @@
 /* Import subtitle when the backup had nothing new to add */
 "settings.backup.import.nothing_to_import.subtitle" = "De inhoud van deze back-up staat al op dit apparaat.";
 
-/* Backup tip title */
-"settings.backup.tip.title" = "Van app wisselen?";
-
-/* Backup tip message */
-"settings.backup.tip.message" = "Maak een back-up van je gegevens voordat je een nieuwe versie installeert om je berichten, contacten en instellingen te behouden.";
-
 /* Default filename for an exported backup; %@ is an ISO-style timestamp */
 "settings.backup.export.default_filename" = "MC1 Back-up %@.mc1backup";
 

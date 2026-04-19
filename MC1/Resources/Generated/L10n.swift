@@ -4127,12 +4127,6 @@ public enum L10n {
             public static let title = L10n.tr("Settings", "settings.backup.import.success.title", fallback: "Import Complete")
           }
         }
-        public enum Tip {
-          /// Backup tip message
-          public static let message = L10n.tr("Settings", "settings.backup.tip.message", fallback: "Back up your data before installing a new version to keep your messages, contacts, and settings.")
-          /// Backup tip title
-          public static let title = L10n.tr("Settings", "settings.backup.tip.title", fallback: "Switching apps?")
-        }
       }
     }
     public enum Telemetry {
