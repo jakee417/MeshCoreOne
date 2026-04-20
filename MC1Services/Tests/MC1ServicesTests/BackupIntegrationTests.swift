@@ -37,10 +37,10 @@ struct BackupIntegrationTests {
 
         // Export
         let service = AppBackupService()
-        let exportedData = try await service.export(persistenceStore: sourceStore)
+        let exportResult = try await service.export(persistenceStore: sourceStore)
 
         // Parse
-        let envelope = try parseBackup(data: exportedData)
+        let envelope = try parseBackup(data: exportResult.data)
         #expect(envelope.manifest.validate(against: envelope))
 
         // Import into a fresh store
@@ -108,8 +108,8 @@ struct BackupIntegrationTests {
 
         // Export from source
         let service = AppBackupService()
-        let exportedData = try await service.export(persistenceStore: sourceStore)
-        let envelope = try parseBackup(data: exportedData)
+        let exportResult = try await service.export(persistenceStore: sourceStore)
+        let envelope = try parseBackup(data: exportResult.data)
 
         // Target store: device with same publicKey but different radioID
         let targetStore = try await PersistenceStore.createTestDataStore(radioID: targetRadioID)
@@ -288,8 +288,8 @@ struct BackupIntegrationTests {
 
         // Export
         let service = AppBackupService()
-        let exportedData = try await service.export(persistenceStore: sourceStore)
-        let envelope = try parseBackup(data: exportedData)
+        let exportResult = try await service.export(persistenceStore: sourceStore)
+        let envelope = try parseBackup(data: exportResult.data)
 
         // Import into fresh store
         let destContainer = try PersistenceStore.createContainer(inMemory: true)
@@ -559,8 +559,8 @@ struct BackupIntegrationTests {
         #expect(try await sourceStore.fetchDevice(id: radioID) == nil)
 
         let service = AppBackupService()
-        let exportedData = try await service.export(persistenceStore: sourceStore)
-        let envelope = try parseBackup(data: exportedData)
+        let result = try await service.export(persistenceStore: sourceStore)
+        let envelope = try parseBackup(data: result.data)
 
         #expect(envelope.devices.isEmpty)
         #expect(envelope.contacts.count == 1)
@@ -1234,8 +1234,8 @@ struct BackupIntegrationTests {
 
         // Export
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: sourceStore)
-        let envelope = try parseBackup(data: data)
+        let result = try await service.export(persistenceStore: sourceStore)
+        let envelope = try parseBackup(data: result.data)
 
         // Verify exported messages have content-based keys, not backup-<UUID>
         let exportedDM = try #require(envelope.messages.first { $0.contactID == contact.id })
@@ -1267,8 +1267,8 @@ struct BackupIntegrationTests {
         try await sourceStore.saveMessage(msg)
 
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: sourceStore)
-        let envelope = try parseBackup(data: data)
+        let result = try await service.export(persistenceStore: sourceStore)
+        let envelope = try parseBackup(data: result.data)
 
         let exported = try #require(envelope.messages.first)
         #expect(exported.deduplicationKey == existingKey)
@@ -1642,7 +1642,8 @@ struct BackupIntegrationTests {
         try await sourceStore.saveMessage(secondMsg)
 
         let service = AppBackupService()
-        let envelope = try parseBackup(data: try await service.export(persistenceStore: sourceStore))
+        let exportResult = try await service.export(persistenceStore: sourceStore)
+        let envelope = try parseBackup(data: exportResult.data)
 
         let destContainer = try PersistenceStore.createContainer(inMemory: true)
         let destStore = PersistenceStore(modelContainer: destContainer)
@@ -1693,7 +1694,8 @@ struct BackupIntegrationTests {
         try await sourceStore.saveMessageRepeat(secondRepeat)
 
         let service = AppBackupService()
-        let envelope = try parseBackup(data: try await service.export(persistenceStore: sourceStore))
+        let exportResult = try await service.export(persistenceStore: sourceStore)
+        let envelope = try parseBackup(data: exportResult.data)
 
         let destContainer = try PersistenceStore.createContainer(inMemory: true)
         let destStore = PersistenceStore(modelContainer: destContainer)

@@ -38,13 +38,13 @@ struct AppBackupServiceTests {
 
         let service = AppBackupService()
 
-        let data = try await service.export(persistenceStore: store)
+        let result = try await service.export(persistenceStore: store)
 
         // Must be non-empty compressed data
-        #expect(!data.isEmpty)
+        #expect(!result.data.isEmpty)
 
         // Round-trip: parse it back
-        let envelope = try parseBackup(data: data)
+        let envelope = try parseBackup(data: result.data)
 
         // Manifest counts
         #expect(envelope.devices.count == 1)
@@ -77,9 +77,9 @@ struct AppBackupServiceTests {
         )
 
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: store)
+        let result = try await service.export(persistenceStore: store)
 
-        let envelope = try parseBackup(data: data)
+        let envelope = try parseBackup(data: result.data)
         let exported = try #require(envelope.messages.first)
 
         // URL and title are preserved
@@ -100,9 +100,9 @@ struct AppBackupServiceTests {
         let store = try await PersistenceStore.createTestDataStore(radioID: radioID)
 
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: store)
+        let result = try await service.export(persistenceStore: store)
 
-        let envelope = try parseBackup(data: data)
+        let envelope = try parseBackup(data: result.data)
         #expect(envelope.devices.count == 1)
         #expect(envelope.contacts.count == 0)
         #expect(envelope.messages.count == 0)
@@ -126,9 +126,9 @@ struct AppBackupServiceTests {
         }
 
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: store)
+        let result = try await service.export(persistenceStore: store)
 
-        let envelope = try parseBackup(data: data)
+        let envelope = try parseBackup(data: result.data)
         #expect(envelope.manifest.contactCount == 3)
         #expect(envelope.manifest.deviceCount == 1)
         #expect(envelope.manifest.validate(against: envelope))
@@ -151,11 +151,11 @@ struct AppBackupServiceTests {
         }
 
         let service = AppBackupService()
-        let compressedData = try await service.export(persistenceStore: store)
+        let result = try await service.export(persistenceStore: store)
 
         // Verify it decompresses successfully (proves it is valid compressed data)
-        let decompressed = try (compressedData as NSData).decompressed(using: .zlib) as Data
-        #expect(decompressed.count > compressedData.count)
+        let decompressed = try (result.data as NSData).decompressed(using: .zlib) as Data
+        #expect(decompressed.count > result.data.count)
     }
 
     // MARK: - Version and source bundle
@@ -166,9 +166,9 @@ struct AppBackupServiceTests {
         let store = try await PersistenceStore.createTestDataStore(radioID: radioID)
 
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: store)
+        let result = try await service.export(persistenceStore: store)
 
-        let envelope = try parseBackup(data: data)
+        let envelope = try parseBackup(data: result.data)
         #expect(envelope.version == AppBackupEnvelope.currentVersion)
     }
 
@@ -334,8 +334,8 @@ struct AppBackupServiceTests {
         try await store.saveDevice(sensitiveDevice)
 
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: store)
-        let envelope = try parseBackup(data: data)
+        let result = try await service.export(persistenceStore: store)
+        let envelope = try parseBackup(data: result.data)
 
         let exported = try #require(envelope.devices.first)
 
@@ -391,8 +391,8 @@ struct AppBackupServiceTests {
         try await store.saveDevice(device)
 
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: store)
-        let envelope = try parseBackup(data: data)
+        let result = try await service.export(persistenceStore: store)
+        let envelope = try parseBackup(data: result.data)
 
         let exported = try #require(envelope.devices.first)
 
@@ -417,8 +417,8 @@ struct AppBackupServiceTests {
         }
         try await store.saveDevice(device)
 
-        let data = try await AppBackupService().export(persistenceStore: store)
-        let envelope = try parseBackup(data: data)
+        let result = try await AppBackupService().export(persistenceStore: store)
+        let envelope = try parseBackup(data: result.data)
 
         let exported = try #require(envelope.devices.first)
         #expect(exported.connectionMethods.isEmpty)
@@ -470,8 +470,8 @@ struct AppBackupServiceTests {
 
         // Export
         let service = AppBackupService()
-        let data = try await service.export(persistenceStore: sourceStore)
-        let envelope = try parseBackup(data: data)
+        let exportResult = try await service.export(persistenceStore: sourceStore)
+        let envelope = try parseBackup(data: exportResult.data)
 
         // Import into a fresh store (unmatched device — will be inserted)
         let destContainer = try PersistenceStore.createContainer(inMemory: true)
@@ -535,6 +535,29 @@ struct AppBackupServiceTests {
         #expect(secondResult.contactsInserted == 0)
         #expect(secondResult.messagesInserted == 0)
         #expect(secondResult.totalInserted == 0)
+    }
+
+    // MARK: - Export: ExportResult
+
+    @Test("Export returns ExportResult carrying the envelope manifest")
+    func exportReturnsManifest() async throws {
+        let radioID = UUID()
+        let store = try await PersistenceStore.createTestDataStore(radioID: radioID)
+
+        let contact = ContactDTO.testContact(radioID: radioID, publicKey: Data(repeating: 0xBB, count: 32))
+        try await store.saveContact(contact)
+
+        let message = MessageDTO.testDirectMessage(radioID: radioID, contactID: contact.id)
+        try await store.saveMessage(message)
+
+        let service = AppBackupService()
+        let result = try await service.export(persistenceStore: store)
+
+        #expect(result.data.isEmpty == false)
+        #expect(result.manifest.contactCount == 1)
+        #expect(result.manifest.messageCount == 1)
+        #expect(result.manifest.count(for: .contacts) == 1)
+        #expect(result.manifest.count(for: .messages) == 1)
     }
 
     // MARK: - Import: Device.id collision does not overwrite local row

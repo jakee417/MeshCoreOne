@@ -1844,12 +1844,16 @@ struct AppBackupViewModelTests {
     @Test("Export sheet cancellation does not surface an error")
     func handleExportResult_IgnoresUserCancellation() throws {
         let viewModel = try makeViewModel()
-        viewModel.exportedData = Data([0x01])
+        viewModel.pendingExport = AppBackupViewModel.PendingExport(
+            data: Data([0x01]),
+            manifest: BackupManifest()
+        )
 
         viewModel.handleExportResult(.failure(CocoaError(.userCancelled)))
 
         #expect(viewModel.errorMessage == nil)
-        #expect(viewModel.exportedData == nil)
+        #expect(viewModel.pendingExport == nil)
+        #expect(viewModel.exportSummary == nil)
     }
 
     @Test("Export uses the active services store when one is available")
@@ -1888,11 +1892,11 @@ struct AppBackupViewModelTests {
         viewModel.performExport()
 
         try await waitUntil("Backup export never completed") {
-            viewModel.exportedData != nil || viewModel.errorMessage != nil
+            viewModel.pendingExport != nil || viewModel.errorMessage != nil
         }
 
-        let exportedData = try #require(viewModel.exportedData)
-        let envelope = try parseBackup(data: exportedData)
+        let pending = try #require(viewModel.pendingExport)
+        let envelope = try parseBackup(data: pending.data)
         #expect(viewModel.errorMessage == nil)
         #expect(envelope.contacts.count == 1)
         #expect(envelope.contacts.first?.name == "Backed Up Contact")
