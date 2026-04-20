@@ -4,6 +4,7 @@ import MC1Services
 import OSLog
 
 private let logger = Logger(subsystem: "com.mc1", category: "ChatConversationView")
+private let messageActionSheetPresentationDelay: Duration = .milliseconds(300)
 
 /// Unified chat conversation view supporting both DMs and Channels.
 struct ChatConversationView: View {
@@ -34,6 +35,7 @@ struct ChatConversationView: View {
     @State private var showingInfo = false
     @State private var selectedMessageForActions: MessageDTO?
     @State private var blockSenderContext: BlockSenderContext?
+    @State private var sendDMContext: SendDMContext?
     @State private var imageViewerData: ImageViewerData?
 
     // MARK: - Other State
@@ -161,6 +163,14 @@ struct ChatConversationView: View {
                         contactIDs: blockedContactIDs
                     )
                 }
+            }
+        }
+        .sheet(item: $sendDMContext) { context in
+            SendDMSheet(
+                senderName: context.senderName,
+                radioID: context.radioID
+            ) { contact in
+                appState.navigation.navigateToChat(with: contact)
             }
         }
         .fullScreenCover(item: $imageViewerData) { data in
@@ -595,8 +605,14 @@ struct ChatConversationView: View {
         case .blockSender:
             guard case .channel(let channel) = conversationType, let name = message.senderNodeName else { return }
             Task {
-                try? await Task.sleep(for: .milliseconds(300))
+                try? await Task.sleep(for: messageActionSheetPresentationDelay)
                 blockSenderContext = BlockSenderContext(senderName: name, radioID: channel.radioID)
+            }
+        case .sendDM:
+            guard case .channel(let channel) = conversationType, let name = message.senderNodeName else { return }
+            Task {
+                try? await Task.sleep(for: messageActionSheetPresentationDelay)
+                sendDMContext = SendDMContext(senderName: name, radioID: channel.radioID)
             }
         case .delete:
             Task { await chatViewModel.deleteMessage(message) }

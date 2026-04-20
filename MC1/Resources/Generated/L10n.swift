@@ -39,10 +39,6 @@ public enum L10n {
         public static let blockAnyway = L10n.tr("Chats", "chats.blockSender.blockAnyway", fallback: "Block")
         /// Location: BlockSenderSheet.swift - Purpose: Cancel button
         public static let cancel = L10n.tr("Chats", "chats.blockSender.cancel", fallback: "Cancel")
-        /// Location: BlockSenderSheet.swift - Purpose: Public key label
-        public static func key(_ p1: Any) -> String {
-          return L10n.tr("Chats", "chats.blockSender.key", String(describing: p1), fallback: "Key: %@")
-        }
         /// Location: BlockSenderSheet.swift - Purpose: Explanation of name-based blocking limitation
         public static let limitation = L10n.tr("Chats", "chats.blockSender.limitation", fallback: "Channel messages don't include sender identity. This block matches by name only — the sender could change their name to bypass it.")
         /// Location: BlockSenderSheet.swift - Purpose: Section header when matching contacts found
@@ -50,12 +46,6 @@ public enum L10n {
         /// Location: BlockSenderSheet.swift - Purpose: Sheet title with sender name
         public static func title(_ p1: Any) -> String {
           return L10n.tr("Chats", "chats.blockSender.title", String(describing: p1), fallback: "Block \"%@\"")
-        }
-        public enum Accessibility {
-          /// Location: BlockSenderSheet.swift - Purpose: Accessibility value when contact is not selected
-          public static let notSelected = L10n.tr("Chats", "chats.blockSender.accessibility.notSelected", fallback: "Not selected")
-          /// Location: BlockSenderSheet.swift - Purpose: Accessibility value when contact is selected
-          public static let selected = L10n.tr("Chats", "chats.blockSender.accessibility.selected", fallback: "Selected")
         }
       }
       public enum Channel {
@@ -249,6 +239,18 @@ public enum L10n {
       public enum ContactInfo {
         /// Location: ChatConversationView.swift - Label showing contact has location
         public static let hasLocation = L10n.tr("Chats", "chats.contactInfo.hasLocation", fallback: "Has location")
+      }
+      public enum ContactMatch {
+        /// Location: ContactMatchRow.swift - Purpose: Public key label
+        public static func key(_ p1: Any) -> String {
+          return L10n.tr("Chats", "chats.contactMatch.key", String(describing: p1), fallback: "Key: %@")
+        }
+        public enum Accessibility {
+          /// Location: ContactMatchRow.swift - Purpose: Accessibility value when contact is not selected
+          public static let notSelected = L10n.tr("Chats", "chats.contactMatch.accessibility.notSelected", fallback: "Not selected")
+          /// Location: ContactMatchRow.swift - Purpose: Accessibility value when contact is selected
+          public static let selected = L10n.tr("Chats", "chats.contactMatch.accessibility.selected", fallback: "Selected")
+        }
       }
       public enum CreatePrivate {
         /// Location: CreatePrivateChannelView.swift - Text field placeholder for channel name
@@ -526,6 +528,8 @@ public enum L10n {
           public static let reply = L10n.tr("Chats", "chats.message.action.reply", fallback: "Reply")
           /// Location: UnifiedMessageBubble.swift - Context menu action to send again
           public static let sendAgain = L10n.tr("Chats", "chats.message.action.sendAgain", fallback: "Send Again")
+          /// Location: MessageActionsSheet.swift - Purpose: Action to start a DM with the channel sender
+          public static let sendDM = L10n.tr("Chats", "chats.message.action.sendDM", fallback: "Send DM")
           /// Location: UnifiedMessageBubble.swift - Context menu action to view path
           public static let viewPath = L10n.tr("Chats", "chats.message.action.viewPath", fallback: "View Path")
         }
@@ -833,6 +837,22 @@ public enum L10n {
         public static let conversations = L10n.tr("Chats", "chats.section.conversations", fallback: "Conversations")
         /// Location: ConversationListContent.swift - Section accessibility label for favorites
         public static let favorites = L10n.tr("Chats", "chats.section.favorites", fallback: "Favorites")
+      }
+      public enum SendDM {
+        /// Location: SendDMSheet.swift - Purpose: Cancel button
+        public static let cancel = L10n.tr("Chats", "chats.sendDM.cancel", fallback: "Cancel")
+        /// Location: SendDMSheet.swift - Purpose: Name-based matching limitation warning
+        public static let limitation = L10n.tr("Chats", "chats.sendDM.limitation", fallback: "Channel messages don't include sender identity. This match is by name only — the contact could be someone else with the same name.")
+        /// Location: SendDMSheet.swift - Purpose: Section header listing matching contacts
+        public static let matchingContacts = L10n.tr("Chats", "chats.sendDM.matchingContacts", fallback: "Select a contact to message:")
+        /// Location: SendDMSheet.swift - Purpose: Empty-state message when no contact matches
+        public static func noMatches(_ p1: Any) -> String {
+          return L10n.tr("Chats", "chats.sendDM.noMatches", String(describing: p1), fallback: "No contact named \"%@\" was found.")
+        }
+        /// Location: SendDMSheet.swift - Purpose: Sheet title with sender name
+        public static func title(_ p1: Any) -> String {
+          return L10n.tr("Chats", "chats.sendDM.title", String(describing: p1), fallback: "Send DM to \"%@\"")
+        }
       }
       public enum Signal {
         /// Location: UnifiedMessageBubble.swift - SNR quality excellent
