@@ -17,6 +17,16 @@ struct OCVPresetTests {
         }
     }
 
+    @Test("All presets fit within UI validation range", arguments: OCVPreset.allCases.filter { $0 != .custom })
+    func presetsFitValidationRange(preset: OCVPreset) {
+        for value in preset.ocvArray {
+            #expect(
+                OCVPreset.validMillivoltRange.contains(value),
+                "Preset \(preset) has value \(value) outside \(OCVPreset.validMillivoltRange)"
+            )
+        }
+    }
+
     @Test("All presets have display names", arguments: OCVPreset.allCases)
     func presetsHaveDisplayNames(preset: OCVPreset) {
         #expect(!preset.displayName.isEmpty, "Preset \(preset) should have a display name")
