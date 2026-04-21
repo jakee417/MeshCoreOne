@@ -25,7 +25,6 @@ public struct BackupUserDefaults: Codable, Sendable, Equatable {
     public var linkPreviewsEnabled: Bool?
     public var linkPreviewsAutoResolveDM: Bool?
     public var linkPreviewsAutoResolveChannels: Bool?
-    public var pathEditIncludeDiscovered: Bool?
     public var frequentEmojis: [String]?
     public var recentEmojis: [String]?
     public var hasSeenRepeaterDragHint: Bool?
@@ -76,7 +75,6 @@ public struct BackupUserDefaults: Codable, Sendable, Equatable {
         (\.linkPreviewsEnabled, "linkPreviewsEnabled"),
         (\.linkPreviewsAutoResolveDM, "linkPreviewsAutoResolveDM"),
         (\.linkPreviewsAutoResolveChannels, "linkPreviewsAutoResolveChannels"),
-        (\.pathEditIncludeDiscovered, "pathEditIncludeDiscovered"),
         (\.hasSeenRepeaterDragHint, "hasSeenRepeaterDragHint"),
         (\.notifyContactMessages, "notifyContactMessages"),
         (\.notifyChannelMessages, "notifyChannelMessages"),

@@ -92,7 +92,7 @@ struct AvailableRepeatersSectionView: View {
                         }
                         .id(node.id)
                         .foregroundStyle(.primary)
-                        .accessibilityLabel(L10n.Contacts.Contacts.PathEdit.addToPath(node.displayName))
+                        .accessibilityLabel(L10n.Contacts.Contacts.PathEdit.addToPathAsHop(node.displayName, viewModel.outboundPath.count + 1))
                     }
                 }
             } label: {

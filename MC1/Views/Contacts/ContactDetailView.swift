@@ -156,8 +156,7 @@ struct ContactDetailView: View {
             // Network path controls
             ContactNetworkPathSection(
                 currentContact: currentContact,
-                pathViewModel: pathViewModel,
-                onRefreshContact: { Task { await refreshContact() } }
+                pathViewModel: pathViewModel
             )
 
             // Technical details
@@ -233,10 +232,19 @@ struct ContactDetailView: View {
         .onDisappear {
             pathViewModel.cancelDiscovery()
         }
-        .sheet(isPresented: $pathViewModel.showingPathEditor) {
+        .sheet(
+            isPresented: $pathViewModel.showingPathEditor,
+            onDismiss: { pathViewModel.insertionIntent = nil }
+        ) {
             PathEditingSheet(viewModel: pathViewModel, contact: currentContact)
         }
-        .alert(L10n.Contacts.Contacts.Detail.Alert.pathError, isPresented: $pathViewModel.showError) {
+        .alert(
+            L10n.Contacts.Contacts.Detail.Alert.pathError,
+            isPresented: Binding(
+                get: { pathViewModel.errorMessage != nil },
+                set: { if !$0 { pathViewModel.errorMessage = nil } }
+            )
+        ) {
             Button(L10n.Contacts.Contacts.Common.ok, role: .cancel) { }
         } message: {
             Text(pathViewModel.errorMessage ?? L10n.Contacts.Contacts.Common.errorOccurred)
@@ -860,9 +868,7 @@ private struct ContactNetworkPathSection: View {
 
     let currentContact: ContactDTO
     let pathViewModel: PathManagementViewModel
-    let onRefreshContact: () -> Void
 
-    // Computed property for path display with resolved names
     private var pathDisplayWithNames: String {
         let pathData = currentContact.outPath
         let byteLength = currentContact.pathByteLength
@@ -874,24 +880,22 @@ private struct ContactNetworkPathSection: View {
             let end = min(start + hashSize, relevantPath.count)
             let hopBytes = Data(relevantPath[start..<end])
             if let name = pathViewModel.resolveHashToName(hopBytes) {
-                return "\(name)"
+                return name
             }
             return hopBytes.hexString()
         }.joined(separator: " \u{2192} ")
     }
 
-    // Route display text for simplified view
-    private var routeDisplayText: String {
+    private func routeDisplayText(pathDisplay: String) -> String {
         if currentContact.isFloodRouted {
             return L10n.Contacts.Contacts.Route.flood
         } else if currentContact.pathHopCount == 0 {
             return L10n.Contacts.Contacts.Route.direct
         } else {
-            return pathDisplayWithNames
+            return pathDisplay
         }
     }
 
-    // Footer text for network path section
     private var networkPathFooterText: String {
         if currentContact.isFloodRouted {
             return L10n.Contacts.Contacts.Detail.floodFooter
@@ -900,19 +904,19 @@ private struct ContactNetworkPathSection: View {
         }
     }
 
-    // VoiceOver accessibility label for path
-    private var pathAccessibilityLabel: String {
+    private func pathAccessibilityLabel(pathDisplay: String) -> String {
         if currentContact.isFloodRouted {
             return L10n.Contacts.Contacts.Detail.routeFlood
         } else if currentContact.pathHopCount == 0 {
             return L10n.Contacts.Contacts.Detail.routeDirect
         } else {
-            return L10n.Contacts.Contacts.Detail.routePrefix(pathDisplayWithNames)
+            return L10n.Contacts.Contacts.Detail.routePrefix(pathDisplay)
         }
     }
 
     var body: some View {
-        Section {
+        let pathDisplay = pathDisplayWithNames
+        return Section {
             // Current routing path
             Label {
                 VStack(alignment: .leading, spacing: 4) {
@@ -920,7 +924,7 @@ private struct ContactNetworkPathSection: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
 
-                    Text(routeDisplayText)
+                    Text(routeDisplayText(pathDisplay: pathDisplay))
                         .font(.caption.monospaced())
                         .foregroundStyle(.primary)
                 }
@@ -929,7 +933,7 @@ private struct ContactNetworkPathSection: View {
                     .foregroundStyle(.secondary)
             }
             .accessibilityElement(children: .combine)
-            .accessibilityLabel(pathAccessibilityLabel)
+            .accessibilityLabel(pathAccessibilityLabel(pathDisplay: pathDisplay))
 
             // Hops away (only when path is known)
             if !currentContact.isFloodRouted {
@@ -996,7 +1000,6 @@ private struct ContactNetworkPathSection: View {
             Button(role: .destructive) {
                 Task {
                     await pathViewModel.resetPath(for: currentContact)
-                    onRefreshContact()
                 }
             } label: {
                 HStack {
