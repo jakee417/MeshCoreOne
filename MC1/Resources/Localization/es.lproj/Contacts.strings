@@ -1155,7 +1155,7 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "Error al establecer ruta: %@";
 
-"contacts.pathManagement.error.hopResizeRequired" = "Modo hash cambiado: elimina y vuelve a agregar los saltos para guardar.";
+"contacts.pathManagement.error.hopResizeRequired" = "Tamaño de hash de ruta cambiado: elimina y vuelve a agregar los saltos para guardar.";
 
 "contacts.pathManagement.error.tooManyHops" = "Demasiados saltos. El modo hash actual admite un máximo de %d.";
 

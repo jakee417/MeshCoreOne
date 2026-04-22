@@ -284,8 +284,10 @@ final class PathManagementViewModel {
     ///
     /// 1. **Resolved** → re-slice from the full `publicKey` at the target width.
     /// 2. **Unresolved, wider than target** → truncate stored `hashBytes`.
-    /// 3. **Unresolved, narrower than target** → leave as-is. ``saveRejection``
-    ///    catches this case since we can't safely widen an unknown prefix.
+    /// 3. **Unresolved, same width or narrower than target** → leave as-is. The
+    ///    equal-width case is already consistent, and the narrower case has to
+    ///    wait for ``saveRejection`` to block the save since we can't safely
+    ///    widen an unknown prefix.
     ///
     /// - Precondition: `targetHashSize` is 1, 2, or 3.
     nonisolated static func normalizeHop(_ hop: PathHop, targetHashSize: Int) -> PathHop {
@@ -622,16 +624,21 @@ final class PathManagementViewModel {
         cleanupCountdownState()
     }
 
-    /// Called when a path discovery response is received via push notification
-    func handleDiscoveryResponse(hopCount: Int) {
+    /// Called when a path discovery response is received via push notification.
+    ///
+    /// `hopCount` is `nil` when the wire's `out_path_len` byte used the reserved
+    /// hash-size mode and couldn't be decoded. Treat that as "no valid path
+    /// returned" rather than silently reporting a direct route.
+    func handleDiscoveryResponse(hopCount: Int?) {
         discoveryTask?.cancel()
         isDiscovering = false
         cleanupCountdownState()
 
-        // hopCount == 0 means direct path (zero hops via repeaters)
-        // hopCount > 0 means routed path through repeaters
-        // Both are successful discoveries
-        discoveryResult = .success(hopCount: hopCount, fromCache: false)
+        if let hopCount {
+            discoveryResult = .success(hopCount: hopCount, fromCache: false)
+        } else {
+            discoveryResult = .noPathFound
+        }
         showDiscoveryResult = true
 
         // Signal that contact data should be refreshed to show new path

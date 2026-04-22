@@ -1142,7 +1142,7 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "Ошибка установки пути: %@";
 
-"contacts.pathManagement.error.hopResizeRequired" = "Режим хеширования изменён — удалите и добавьте узлы заново, чтобы сохранить.";
+"contacts.pathManagement.error.hopResizeRequired" = "Размер хеша пути изменён — удалите и добавьте узлы заново, чтобы сохранить.";
 
 "contacts.pathManagement.error.tooManyHops" = "Слишком много узлов. Текущий режим хеширования поддерживает не более %d.";
 

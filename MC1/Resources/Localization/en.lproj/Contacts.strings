@@ -1155,8 +1155,8 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "Set path failed: %@";
 
-/* Location: PathManagementViewModel.swift - Purpose: Shown when a stored path's hop can't be resized to the device's current hash mode */
-"contacts.pathManagement.error.hopResizeRequired" = "Hash mode changed — remove and re-add hops to save.";
+/* Location: PathManagementViewModel.swift - Purpose: Shown when a stored path's hop can't be resized to the device's current hash size */
+"contacts.pathManagement.error.hopResizeRequired" = "Path Hash Size changed — remove and re-add hops to save.";
 
 /* Location: PathManagementViewModel.swift - Purpose: Shown when the existing path has more hops than the current hash mode supports */
 "contacts.pathManagement.error.tooManyHops" = "Too many hops. Current hash mode supports at most %d.";

@@ -896,8 +896,9 @@ public struct PathInfo: Sendable, Equatable {
     /// The inbound path data.
     public let inPath: Data
 
-    /// Hop count decoded from ``outPathLength``. Returns `nil` for reserved mode
-    /// encodings (e.g., the `0xFF` flood sentinel) so callers can fall back.
+    /// Hop count decoded from ``outPathLength``. Returns `nil` when the byte uses
+    /// the reserved hash-size mode (upper 2 bits == `11`) so callers can handle
+    /// unknown encodings explicitly instead of defaulting to "direct".
     public var outHopCount: Int? {
         decodePathLen(outPathLength)?.hopCount
     }
@@ -912,9 +913,11 @@ public struct PathInfo: Sendable, Equatable {
     /// - Parameters:
     ///   - publicKeyPrefix: The node's public key prefix.
     ///   - outPathLength: Raw `out_path_len` byte from the wire.
-    ///   - outPath: The outbound path bytes (size must match ``outPathLength``).
+    ///   - outPath: The outbound path bytes. Length must equal the byte length
+    ///     decoded from ``outPathLength`` (`0` when the byte uses the reserved
+    ///     mode).
     ///   - inPathLength: Raw `in_path_len` byte from the wire.
-    ///   - inPath: The inbound path bytes.
+    ///   - inPath: The inbound path bytes. Same contract as `outPath`.
     public init(
         publicKeyPrefix: Data,
         outPathLength: UInt8,
@@ -922,6 +925,16 @@ public struct PathInfo: Sendable, Equatable {
         inPathLength: UInt8,
         inPath: Data
     ) {
+        let outByteLength = decodePathLen(outPathLength)?.byteLength ?? 0
+        let inByteLength = decodePathLen(inPathLength)?.byteLength ?? 0
+        precondition(
+            outPath.count == outByteLength,
+            "PathInfo.outPath size \(outPath.count) does not match outPathLength byte length \(outByteLength)"
+        )
+        precondition(
+            inPath.count == inByteLength,
+            "PathInfo.inPath size \(inPath.count) does not match inPathLength byte length \(inByteLength)"
+        )
         self.publicKeyPrefix = publicKeyPrefix
         self.outPathLength = outPathLength
         self.outPath = outPath

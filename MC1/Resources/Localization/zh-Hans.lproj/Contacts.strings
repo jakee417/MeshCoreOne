@@ -1155,7 +1155,7 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "设置路径失败：%@";
 
-"contacts.pathManagement.error.hopResizeRequired" = "哈希模式已更改 — 请移除并重新添加跳点以保存。";
+"contacts.pathManagement.error.hopResizeRequired" = "路径哈希大小已更改 — 请移除并重新添加跳点以保存。";
 
 "contacts.pathManagement.error.tooManyHops" = "跳点过多。当前哈希模式最多支持 %d 个。";
 

@@ -1512,8 +1512,8 @@ public enum L10n {
       }
       public enum PathManagement {
         public enum Error {
-          /// Location: PathManagementViewModel.swift - Purpose: Shown when a stored path's hop can't be resized to the device's current hash mode
-          public static let hopResizeRequired = L10n.tr("Contacts", "contacts.pathManagement.error.hopResizeRequired", fallback: "Hash mode changed — remove and re-add hops to save.")
+          /// Location: PathManagementViewModel.swift - Purpose: Shown when a stored path's hop can't be resized to the device's current hash size
+          public static let hopResizeRequired = L10n.tr("Contacts", "contacts.pathManagement.error.hopResizeRequired", fallback: "Path Hash Size changed — remove and re-add hops to save.")
           /// Location: PathManagementViewModel.swift - Purpose: Reset path error prefix
           public static func resetFailed(_ p1: Any) -> String {
             return L10n.tr("Contacts", "contacts.pathManagement.error.resetFailed", String(describing: p1), fallback: "Reset path failed: %@")
@@ -3470,16 +3470,20 @@ public enum L10n {
       }
     }
     public enum DefaultFloodScope {
-      /// Button to apply a custom region name
-      public static let apply = L10n.tr("Settings", "defaultFloodScope.apply", fallback: "Add")
+      /// Button to apply a custom region name as the active flood scope
+      public static let apply = L10n.tr("Settings", "defaultFloodScope.apply", fallback: "Apply")
       /// Placeholder for custom region name field
       public static let customPlaceholder = L10n.tr("Settings", "defaultFloodScope.customPlaceholder", fallback: "Custom region name")
       /// Option to clear the persisted default flood scope
-      public static let disabled = L10n.tr("Settings", "defaultFloodScope.disabled", fallback: "Disabled")
+      public static let disabled = L10n.tr("Settings", "defaultFloodScope.disabled", fallback: "None")
+      /// Validation error when the custom region name already exists on the device
+      public static let duplicate = L10n.tr("Settings", "defaultFloodScope.duplicate", fallback: "This region is already in your list.")
       /// Footer explaining default flood scope
-      public static let footer = L10n.tr("Settings", "defaultFloodScope.footer", fallback: "When set, the device applies this scope to flood sends until a channel-specific scope overrides it. The scope is saved on the device and survives reboots.")
+      public static let footer = L10n.tr("Settings", "defaultFloodScope.footer", fallback: "When set, the device applies this scope to flood sends unless a channel-specific scope overrides it. The scope is saved on the device and survives reboots.")
       /// Section header for default flood scope picker
       public static let header = L10n.tr("Settings", "defaultFloodScope.header", fallback: "Default Flood Scope")
+      /// Validation error when a custom region name contains unsupported characters
+      public static let invalidName = L10n.tr("Settings", "defaultFloodScope.invalidName", fallback: "Region names can only contain letters, numbers, and hyphens.")
     }
     public enum DemoMode {
       /// Toggle label to enable demo mode

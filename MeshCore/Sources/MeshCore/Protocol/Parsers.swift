@@ -1043,12 +1043,19 @@ public enum Parsers {
 
             // Parse outbound path (multibyte encoded). Preserve the raw length
             // byte so the UI can display an accurate hop count without needing
-            // the device's cached `hashSize`.
+            // the device's cached `hashSize`. A truncated payload where the
+            // declared byte length runs past the end of `data` is surfaced as
+            // `.parseFailure` so `PathInfo`'s size invariant holds.
             if data.count > offset {
                 outPathLength = data[offset]
                 offset += 1
-                if let decoded = decodePathLen(outPathLength), decoded.byteLength > 0,
-                   data.count >= offset + decoded.byteLength {
+                if let decoded = decodePathLen(outPathLength), decoded.byteLength > 0 {
+                    guard data.count >= offset + decoded.byteLength else {
+                        return .parseFailure(
+                            data: data,
+                            reason: "PathDiscoveryResponse truncated outbound path: need \(decoded.byteLength) bytes, have \(data.count - offset)"
+                        )
+                    }
                     outPath = Data(data[offset..<offset + decoded.byteLength])
                     offset += decoded.byteLength
                 }
@@ -1058,8 +1065,13 @@ public enum Parsers {
             if data.count > offset {
                 inPathLength = data[offset]
                 offset += 1
-                if let decoded = decodePathLen(inPathLength), decoded.byteLength > 0,
-                   data.count >= offset + decoded.byteLength {
+                if let decoded = decodePathLen(inPathLength), decoded.byteLength > 0 {
+                    guard data.count >= offset + decoded.byteLength else {
+                        return .parseFailure(
+                            data: data,
+                            reason: "PathDiscoveryResponse truncated inbound path: need \(decoded.byteLength) bytes, have \(data.count - offset)"
+                        )
+                    }
                     inPath = Data(data[offset..<offset + decoded.byteLength])
                 }
             }

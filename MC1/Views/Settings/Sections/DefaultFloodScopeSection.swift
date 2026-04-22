@@ -9,6 +9,7 @@ import MC1Services
 /// value is cached in ``DeviceDTO/defaultFloodScopeName``.
 struct DefaultFloodScopeSection: View {
     @Environment(\.appState) private var appState
+    @Environment(\.dismiss) private var dismiss
     @State private var isApplying = false
     @State private var errorMessage: String?
     @State private var retryAlert = RetryAlertState()
@@ -117,8 +118,8 @@ struct DefaultFloodScopeSection: View {
     private func validationText(for error: RegionNameValidator.ValidationError) -> String? {
         switch error {
         case .empty: nil
-        case .invalidCharacters: L10n.Chats.Chats.ChannelInfo.Region.invalidName
-        case .duplicate: L10n.Chats.Chats.ChannelInfo.Region.duplicate
+        case .invalidCharacters: L10n.Settings.DefaultFloodScope.invalidName
+        case .duplicate: L10n.Settings.DefaultFloodScope.duplicate
         }
     }
 
@@ -143,7 +144,7 @@ struct DefaultFloodScopeSection: View {
                 retryAlert.show(
                     message: error.errorDescription ?? L10n.Settings.Alert.Retry.fallbackMessage,
                     onRetry: { apply(name: name, addToKnownRegions: addToKnownRegions) },
-                    onMaxRetriesExceeded: {}
+                    onMaxRetriesExceeded: { dismiss() }
                 )
             } catch {
                 errorMessage = error.localizedDescription

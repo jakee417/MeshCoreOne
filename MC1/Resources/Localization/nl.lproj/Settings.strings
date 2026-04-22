@@ -367,16 +367,22 @@
 "defaultFloodScope.header" = "Standaard flood-bereik";
 
 /* Footer explaining default flood scope */
-"defaultFloodScope.footer" = "Wanneer ingesteld past het apparaat dit bereik toe op flood-verzendingen totdat een kanaalspecifiek bereik dit overschrijft. Het bereik wordt op het apparaat opgeslagen en blijft behouden na herstart.";
+"defaultFloodScope.footer" = "Wanneer ingesteld past het apparaat dit bereik toe op flood-verzendingen tenzij een kanaalspecifiek bereik dit overschrijft. Het bereik wordt op het apparaat opgeslagen en blijft behouden na herstart.";
 
 /* Option to clear the persisted default flood scope */
-"defaultFloodScope.disabled" = "Uitgeschakeld";
+"defaultFloodScope.disabled" = "Geen";
 
 /* Placeholder for custom region name field */
 "defaultFloodScope.customPlaceholder" = "Aangepaste regionaam";
 
-/* Button to apply a custom region name */
-"defaultFloodScope.apply" = "Toevoegen";
+/* Button to apply a custom region name as the active flood scope */
+"defaultFloodScope.apply" = "Toepassen";
+
+/* Validation error when a custom region name contains unsupported characters */
+"defaultFloodScope.invalidName" = "Regionamen mogen alleen letters, cijfers en koppeltekens bevatten.";
+
+/* Validation error when the custom region name already exists on the device */
+"defaultFloodScope.duplicate" = "Deze regio staat al in je lijst.";
 
 
 // MARK: - Battery Curve Section

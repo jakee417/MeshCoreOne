@@ -358,16 +358,22 @@
 "defaultFloodScope.header" = "Domyślny zakres flood";
 
 /* Footer explaining default flood scope */
-"defaultFloodScope.footer" = "Po ustawieniu urządzenie stosuje ten zakres do wysyłek flood, dopóki nie zastąpi go zakres specyficzny dla kanału. Zakres jest zapisywany w urządzeniu i zachowywany po restarcie.";
+"defaultFloodScope.footer" = "Po ustawieniu urządzenie stosuje ten zakres do wysyłek flood, chyba że zastąpi go zakres specyficzny dla kanału. Zakres jest zapisywany w urządzeniu i zachowywany po restarcie.";
 
 /* Option to clear the persisted default flood scope */
-"defaultFloodScope.disabled" = "Wyłączone";
+"defaultFloodScope.disabled" = "Brak";
 
 /* Placeholder for custom region name field */
 "defaultFloodScope.customPlaceholder" = "Niestandardowa nazwa regionu";
 
-/* Button to apply a custom region name */
-"defaultFloodScope.apply" = "Dodaj";
+/* Button to apply a custom region name as the active flood scope */
+"defaultFloodScope.apply" = "Zastosuj";
+
+/* Validation error when a custom region name contains unsupported characters */
+"defaultFloodScope.invalidName" = "Nazwy regionów mogą zawierać tylko litery, cyfry i łączniki.";
+
+/* Validation error when the custom region name already exists on the device */
+"defaultFloodScope.duplicate" = "Ten region już znajduje się na Twojej liście.";
 
 
 // MARK: - Battery Curve Section

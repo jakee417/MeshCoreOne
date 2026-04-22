@@ -327,6 +327,38 @@ struct PathManagementViewModelEditingTests {
             "Resolved hop should be re-sliced to the device's hashSize")
     }
 
+    @Test("initializeEditablePath leaves narrower unresolved hop unchanged so saveRejection blocks save")
+    func initializeEditablePathNarrowerUnresolvedRoundTripsToRejection() {
+        // Device's connectedDevice isn't reachable from tests, so this test
+        // walks the same normalize → saveRejection pipeline that
+        // `initializeEditablePath` runs under a wider `hashSize`. Stored path:
+        // mode 0 (1B/hop), 1 hop, unresolvable. Target device hashSize=3 (mode 2).
+        let storedHashSize = 1
+        let storedPath = Data([0xA1])
+        let targetHashSize = 3
+        let targetMaxHopCount = 21  // 64-byte payload budget / 3 bytes per hop
+
+        let hops = stride(from: 0, to: storedPath.count, by: storedHashSize).map { start in
+            let end = min(start + storedHashSize, storedPath.count)
+            let bytes = Data(storedPath[start..<end])
+            let hop = PathHop(hashBytes: bytes, publicKey: nil, resolvedName: nil)
+            return PathManagementViewModel.normalizeHop(hop, targetHashSize: targetHashSize)
+        }
+
+        #expect(hops.count == 1)
+        #expect(hops[0].hashBytes == Data([0xA1]),
+            "Narrower unresolved hop must stay short so saveRejection can flag it.")
+        #expect(hops[0].publicKey == nil)
+
+        let rejection = PathManagementViewModel.saveRejection(
+            for: hops,
+            targetHashSize: targetHashSize,
+            maxHopCount: targetMaxHopCount
+        )
+        #expect(rejection != nil,
+            "saveRejection must refuse to save a path whose unresolved hops can't widen to the device's hash size.")
+    }
+
     // MARK: - Max-hop guard
 
     @Test("isPathFull is false with no hops at hashSize=1")

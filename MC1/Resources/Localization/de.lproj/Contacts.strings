@@ -1155,7 +1155,7 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "Pfad setzen fehlgeschlagen: %@";
 
-"contacts.pathManagement.error.hopResizeRequired" = "Hash-Modus geändert – Knoten entfernen und erneut hinzufügen, um zu speichern.";
+"contacts.pathManagement.error.hopResizeRequired" = "Pfad-Hash-Größe geändert – Knoten entfernen und erneut hinzufügen, um zu speichern.";
 
 "contacts.pathManagement.error.tooManyHops" = "Zu viele Knoten. Der aktuelle Hash-Modus unterstützt maximal %d.";
 

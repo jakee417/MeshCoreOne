@@ -411,14 +411,16 @@ public actor AdvertisementService {
 
     /// Handle path discovery response event
     private func handlePathDiscoveryResponse(result: PathInfo, radioID: UUID) async {
-        let deviceHashSize = (try? await dataStore.fetchDevice(radioID: radioID))?.hashSize ?? 1
-
-        // Debug logging for path discovery (chunk by hash size for correct hop display)
-        let outHops = stride(from: 0, to: result.outPath.count, by: deviceHashSize).map { start in
-            result.outPath[start..<min(start + deviceHashSize, result.outPath.count)].map { String(format: "%02X", $0) }.joined()
+        // Chunk debug output using the hash size each direction declares on
+        // the wire so mode-skew between firmware and the cached device record
+        // can't smear hop boundaries in the log.
+        let outHashSize = decodePathLen(result.outPathLength)?.hashSize ?? 1
+        let inHashSize = decodePathLen(result.inPathLength)?.hashSize ?? 1
+        let outHops = stride(from: 0, to: result.outPath.count, by: outHashSize).map { start in
+            result.outPath[start..<min(start + outHashSize, result.outPath.count)].map { String(format: "%02X", $0) }.joined()
         }
-        let inHops = stride(from: 0, to: result.inPath.count, by: deviceHashSize).map { start in
-            result.inPath[start..<min(start + deviceHashSize, result.inPath.count)].map { String(format: "%02X", $0) }.joined()
+        let inHops = stride(from: 0, to: result.inPath.count, by: inHashSize).map { start in
+            result.inPath[start..<min(start + inHashSize, result.inPath.count)].map { String(format: "%02X", $0) }.joined()
         }
         let pubKeyHex = result.publicKeyPrefix.prefix(3).map { String(format: "%02X", $0) }.joined()
         let outDisplay = outHops.isEmpty ? "direct" : outHops.joined(separator: " → ")

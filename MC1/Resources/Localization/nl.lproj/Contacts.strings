@@ -1155,7 +1155,7 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "Pad instellen mislukt: %@";
 
-"contacts.pathManagement.error.hopResizeRequired" = "Hashmodus gewijzigd — verwijder en voeg hops opnieuw toe om op te slaan.";
+"contacts.pathManagement.error.hopResizeRequired" = "Pad-hashgrootte gewijzigd — verwijder en voeg hops opnieuw toe om op te slaan.";
 
 "contacts.pathManagement.error.tooManyHops" = "Te veel hops. De huidige hashmodus ondersteunt maximaal %d.";
 

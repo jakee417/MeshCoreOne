@@ -358,16 +358,22 @@
 "defaultFloodScope.header" = "Default Flood Scope";
 
 /* Footer explaining default flood scope */
-"defaultFloodScope.footer" = "When set, the device applies this scope to flood sends until a channel-specific scope overrides it. The scope is saved on the device and survives reboots.";
+"defaultFloodScope.footer" = "When set, the device applies this scope to flood sends unless a channel-specific scope overrides it. The scope is saved on the device and survives reboots.";
 
 /* Option to clear the persisted default flood scope */
-"defaultFloodScope.disabled" = "Disabled";
+"defaultFloodScope.disabled" = "None";
 
 /* Placeholder for custom region name field */
 "defaultFloodScope.customPlaceholder" = "Custom region name";
 
-/* Button to apply a custom region name */
-"defaultFloodScope.apply" = "Add";
+/* Button to apply a custom region name as the active flood scope */
+"defaultFloodScope.apply" = "Apply";
+
+/* Validation error when a custom region name contains unsupported characters */
+"defaultFloodScope.invalidName" = "Region names can only contain letters, numbers, and hyphens.";
+
+/* Validation error when the custom region name already exists on the device */
+"defaultFloodScope.duplicate" = "This region is already in your list.";
 
 
 // MARK: - Battery Curve Section

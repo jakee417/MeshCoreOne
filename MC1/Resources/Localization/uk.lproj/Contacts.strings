@@ -1142,7 +1142,7 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "Помилка встановлення шляху: %@";
 
-"contacts.pathManagement.error.hopResizeRequired" = "Режим хешування змінено — видаліть і додайте вузли знову, щоб зберегти.";
+"contacts.pathManagement.error.hopResizeRequired" = "Розмір хешу шляху змінено — видаліть і додайте вузли знову, щоб зберегти.";
 
 "contacts.pathManagement.error.tooManyHops" = "Забагато вузлів. Поточний режим хешування підтримує щонайбільше %d.";
 

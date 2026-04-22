@@ -1142,7 +1142,7 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "Ustawianie ścieżki nie powiodło się: %@";
 
-"contacts.pathManagement.error.hopResizeRequired" = "Tryb skrótu zmieniony — usuń i dodaj ponownie skoki, aby zapisać.";
+"contacts.pathManagement.error.hopResizeRequired" = "Rozmiar hashu ścieżki zmieniony — usuń i dodaj ponownie skoki, aby zapisać.";
 
 "contacts.pathManagement.error.tooManyHops" = "Za dużo skoków. Aktualny tryb skrótu obsługuje maksymalnie %d.";
 

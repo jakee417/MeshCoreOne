@@ -1155,7 +1155,7 @@
 /* Location: PathManagementViewModel.swift - Purpose: Set path error prefix */
 "contacts.pathManagement.error.setFailed" = "Échec de la définition du chemin : %@";
 
-"contacts.pathManagement.error.hopResizeRequired" = "Mode de hachage modifié — supprimez et rajoutez les sauts pour enregistrer.";
+"contacts.pathManagement.error.hopResizeRequired" = "Taille du hash de chemin modifiée — supprimez et rajoutez les sauts pour enregistrer.";
 
 "contacts.pathManagement.error.tooManyHops" = "Trop de sauts. Le mode de hachage actuel en prend au plus %d.";
 
