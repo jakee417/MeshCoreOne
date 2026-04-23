@@ -72,7 +72,7 @@ public actor RxLogService {
             // This eliminates the race condition where events arrive before secrets are synced
             await self.loadSecretsFromDatabase(radioID: radioID)
 
-            let events = await session.events()
+            let events = await session.events(filter: .rxLogData)
 
             for await event in events {
                 guard !Task.isCancelled else { break }
