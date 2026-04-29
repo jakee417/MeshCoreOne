@@ -32,6 +32,7 @@ struct ContentView: View {
                     Button(L10n.Localizable.Alert.ConnectionFailed.removeAndRetry, role: .destructive) {
                         appState.removeFailedPairingAndRetry()
                     }
+                    .accessibilityLabel(L10n.Localizable.Accessibility.Alert.ConnectionFailed.removeAndRetry)
                     Button(L10n.Localizable.Common.cancel, role: .cancel) {
                         appState.connectionUI.failedPairingDeviceID = nil
                     }
@@ -47,6 +48,7 @@ struct ContentView: View {
                     Button(L10n.Localizable.Alert.ConnectionFailed.removeAndRetry, role: .destructive) {
                         appState.removeFailedPairingAndRetry()
                     }
+                    .accessibilityLabel(L10n.Localizable.Accessibility.Alert.ConnectionFailed.removeAndRetry)
                     Button(L10n.Localizable.Common.cancel, role: .cancel) {
                         appState.connectionUI.failedPairingDeviceID = nil
                     }

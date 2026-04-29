@@ -111,6 +111,9 @@
 /* Button to remove failed pairing and retry connection */
 "alert.connectionFailed.removeAndRetry" = "Eliminar y reintentar";
 
+/* VoiceOver label for the destructive Remove and Try Again button — clarifies that "remove" means removing the device pairing */
+"accessibility.alert.connectionFailed.removeAndRetry" = "Eliminar emparejamiento del dispositivo y volver a intentarlo";
+
 
 // MARK: - Accessibility
 

@@ -1994,6 +1994,12 @@ public enum L10n {
       public static let on = L10n.tr("Localizable", "accessibility.on", fallback: "On")
       /// VoiceOver announcement when viewing cached data while disconnected from device
       public static let viewingCachedData = L10n.tr("Localizable", "accessibility.viewingCachedData", fallback: "Viewing cached data. Connect to device for updates.")
+      public enum Alert {
+        public enum ConnectionFailed {
+          /// VoiceOver label for the destructive Remove and Try Again button — clarifies that "remove" means removing the device pairing
+          public static let removeAndRetry = L10n.tr("Localizable", "accessibility.alert.connectionFailed.removeAndRetry", fallback: "Remove device pairing and try again")
+        }
+      }
       public enum Connection {
         /// VoiceOver announcement when device connection is lost
         public static let deviceConnectionLost = L10n.tr("Localizable", "accessibility.connection.deviceConnectionLost", fallback: "Device connection lost")
