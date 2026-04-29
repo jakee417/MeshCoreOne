@@ -82,4 +82,13 @@ struct RegionalAreasTests {
         let region = RegionSelection(countryCode: "US", source: .manual)
         #expect(RegionalAreas.displayName(for: region) == "United States")
     }
+
+    @Test("continents and countries cover the same set of country codes")
+    func continentsCountriesAlignment() {
+        // Adding a country to one table without the other silently breaks the picker
+        // (visible but no recommendation) or the recommendation (no picker entry).
+        let continentKeys = Set(RegionalAreas.continents.keys)
+        let countryIDs = Set(RegionalAreas.countries.map(\.id))
+        #expect(continentKeys == countryIDs)
+    }
 }

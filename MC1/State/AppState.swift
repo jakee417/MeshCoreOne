@@ -42,8 +42,6 @@ public final class AppState {
 
     // MARK: - Region preference
 
-    private static let regionKey = "userPrefs.region"
-
     private var _regionResolver: RegionResolver?
     public var regionResolver: RegionResolver {
         if let existing = _regionResolver { return existing }
@@ -52,26 +50,36 @@ public final class AppState {
         return resolver
     }
 
+    /// Suppresses the `regionSelection` `didSet` write-back during cold-start load. Without
+    /// this, `loadPersistedRegionSelection()` would re-encode the just-read JSON and rewrite
+    /// the same bytes to UserDefaults on every launch.
+    @ObservationIgnored private var suppressRegionPersist = false
+
     public var regionSelection: RegionSelection? {
-        didSet { persistRegionSelection() }
+        didSet {
+            guard !suppressRegionPersist else { return }
+            persistRegionSelection()
+        }
     }
 
     private func persistRegionSelection() {
         if let regionSelection,
            let data = try? JSONEncoder().encode(regionSelection) {
-            UserDefaults.standard.set(data, forKey: Self.regionKey)
+            UserDefaults.standard.set(data, forKey: BackupUserDefaults.regionSelectionKey)
         } else {
-            UserDefaults.standard.removeObject(forKey: Self.regionKey)
+            UserDefaults.standard.removeObject(forKey: BackupUserDefaults.regionSelectionKey)
         }
     }
 
     private func loadPersistedRegionSelection() {
-        guard let data = UserDefaults.standard.data(forKey: Self.regionKey) else { return }
+        guard let data = UserDefaults.standard.data(forKey: BackupUserDefaults.regionSelectionKey) else { return }
         guard let decoded = try? JSONDecoder().decode(RegionSelection.self, from: data) else {
             logger.warning("Failed to decode persisted region selection — clearing key")
-            UserDefaults.standard.removeObject(forKey: Self.regionKey)
+            UserDefaults.standard.removeObject(forKey: BackupUserDefaults.regionSelectionKey)
             return
         }
+        suppressRegionPersist = true
+        defer { suppressRegionPersist = false }
         self.regionSelection = decoded
     }
 

@@ -2386,6 +2386,10 @@ public enum L10n {
         /// Location: PresetStepView.swift - Already-configured title
         public static let title = L10n.tr("Onboarding", "preset.alreadyConfigured.title", fallback: "Already configured")
       }
+      public enum Error {
+        /// Location: PresetStepView.apply(id:) - Error shown when user taps Apply before services finished wiring
+        public static let notConnected = L10n.tr("Onboarding", "preset.error.notConnected", fallback: "Connect to your device to apply this preset.")
+      }
       public enum Subtitle {
         /// Location: PresetStepView.swift - Subtitle for empty-region fallback
         public static let locale = L10n.tr("Onboarding", "preset.subtitle.locale", fallback: "Pick a preset for your radio.")
@@ -4147,6 +4151,16 @@ public enum L10n {
         public static let location = L10n.tr("Settings", "region.source.location", fallback: "Auto-detected")
         /// Location: SettingsView.swift - Caption when region was manually set
         public static let manual = L10n.tr("Settings", "region.source.manual", fallback: "Manually set")
+      }
+      public enum Subdivision {
+        /// Location: RegionalAreas.subdivisionDisplayName - Queensland (AU-QLD) state name
+        public static let auQld = L10n.tr("Settings", "region.subdivision.AU-QLD", fallback: "Queensland")
+        /// Location: RegionalAreas.subdivisionDisplayName - South Australia (AU-SA) state name
+        public static let auSa = L10n.tr("Settings", "region.subdivision.AU-SA", fallback: "South Australia")
+        /// Location: RegionalAreas.subdivisionDisplayName - Western Australia (AU-WA) state name
+        public static let auWa = L10n.tr("Settings", "region.subdivision.AU-WA", fallback: "Western Australia")
+        /// Location: RegionalAreas.subdivisionDisplayName - California (US-CA) state name
+        public static let usCa = L10n.tr("Settings", "region.subdivision.US-CA", fallback: "California")
       }
     }
     public enum ReplyWithQuote {

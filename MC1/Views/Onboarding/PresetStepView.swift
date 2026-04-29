@@ -42,6 +42,10 @@ struct PresetStepView: View {
         return recommended.id == currentDevicePreset.id
     }
 
+    private var canApply: Bool {
+        appState.services?.settingsService != nil
+    }
+
     var body: some View {
         Group {
             if alreadyConfigured, let recommended {
@@ -68,7 +72,7 @@ struct PresetStepView: View {
                 .accessibilityHeading(.h1)
             Text(L10n.Onboarding.Preset.AlreadyConfigured.subtitle(
                 preset.name,
-                region.map(RegionalAreas.displayName(for:)) ?? ""
+                region.map { RegionalAreas.displayName(for: $0) } ?? ""
             ))
                 .font(.body)
                 .foregroundStyle(.secondary)
@@ -102,7 +106,7 @@ struct PresetStepView: View {
 
     private var pickerState: some View {
         VStack(spacing: OnboardingMetrics.cardSpacing) {
-            VStack(spacing: 8) {
+            VStack(spacing: OnboardingMetrics.titleStackSpacing) {
                 Text(L10n.Onboarding.Preset.title)
                     .font(.largeTitle)
                     .bold()
@@ -117,7 +121,7 @@ struct PresetStepView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .padding(.top, 40)
+            .padding(.top, OnboardingMetrics.headerTopPadding)
 
             ScrollView {
                 VStack(spacing: 12) {
@@ -144,15 +148,16 @@ struct PresetStepView: View {
                     .padding()
             }
             .liquidGlassProminentButtonStyle()
-            .disabled(isApplying || selectedID == nil)
+            .disabled(isApplying || selectedID == nil || !canApply)
             .padding(.horizontal)
             .padding(.bottom)
         }
     }
 
     private var applyCTAText: String {
-        let preset = alternatives.first(where: { $0.id == selectedID }) ?? recommended
-        guard let preset else { return L10n.Onboarding.Preset.use("") }
+        guard let preset = alternatives.first(where: { $0.id == selectedID }) ?? recommended else {
+            return ""
+        }
         return L10n.Onboarding.Preset.use(preset.name)
     }
 
@@ -160,10 +165,18 @@ struct PresetStepView: View {
         Button {
             selectedID = preset.id
         } label: {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(L10n.Onboarding.Preset.recommendedTag)
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.tint)
+            VStack(alignment: .leading, spacing: OnboardingMetrics.titleStackSpacing) {
+                HStack {
+                    Text(L10n.Onboarding.Preset.recommendedTag)
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.tint)
+                    Spacer()
+                    if selectedID == preset.id {
+                        Image(systemName: "checkmark")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tint)
+                    }
+                }
                 Text(preset.name)
                     .font(.title3.weight(.semibold))
                 Text("\(preset.frequencyMHz, format: .number.precision(.fractionLength(3))) MHz · SF\(preset.spreadingFactor)")
@@ -206,8 +219,13 @@ struct PresetStepView: View {
     }
 
     private func apply(id: String) {
-        guard let preset = alternatives.first(where: { $0.id == id }) ?? recommended,
-              let settingsService = appState.services?.settingsService else { return }
+        guard let preset = alternatives.first(where: { $0.id == id }) ?? recommended else { return }
+        guard let settingsService = appState.services?.settingsService else {
+            // Defensive: CTA is disabled when services is nil, but if reconnect ends mid-tap
+            // we surface the error rather than swallowing it silently.
+            errorMessage = L10n.Onboarding.Preset.Error.notConnected
+            return
+        }
         isApplying = true
         Task {
             do {

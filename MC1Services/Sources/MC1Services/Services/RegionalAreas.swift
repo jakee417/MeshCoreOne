@@ -145,14 +145,22 @@ public enum RegionalAreas {
         return "\(stateName), \(countryName)"
     }
 
-    private static func subdivisionDisplayName(_ code: String) -> String? {
-        // English fallback table. Will be replaced by an L10n lookup of `Subdivision.nameKey` in PR 4 once the strings ship.
-        let englishFallbacks: [String: String] = [
-            "US-CA": "California",
-            "AU-QLD": "Queensland",
-            "AU-SA": "South Australia",
-            "AU-WA": "Western Australia",
-        ]
-        return englishFallbacks[code]
+    /// Returns the localized subdivision name for an ISO 3166-2 code (e.g. "US-CA" → "California").
+    /// Looks up `region.subdivision.<code>` in the host app bundle's `Settings.strings` and falls
+    /// back to the English value when the key is missing, so unit tests running outside an app
+    /// bundle still resolve a deterministic name.
+    public static func subdivisionDisplayName(_ code: String) -> String? {
+        guard let englishFallback = englishSubdivisionFallbacks[code] else { return nil }
+        let key = "region.subdivision.\(code)"
+        return Bundle.main.localizedString(forKey: key, value: englishFallback, table: "Settings")
     }
+
+    /// English values used as the `value:` fallback in `bundle.localizedString` and as the source
+    /// of truth for `Settings.strings` `region.subdivision.*` entries.
+    private static let englishSubdivisionFallbacks: [String: String] = [
+        "US-CA": "California",
+        "AU-QLD": "Queensland",
+        "AU-SA": "South Australia",
+        "AU-WA": "Western Australia",
+    ]
 }

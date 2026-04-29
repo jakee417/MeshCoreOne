@@ -1876,16 +1876,16 @@ struct BackupIntegrationTests {
     func restoreRespectsExistingValue() throws {
         let defaults = UserDefaults(suiteName: "test.\(UUID().uuidString)")!
         let local = RegionSelection(countryCode: "DE", source: .manual)
-        defaults.set(try JSONEncoder().encode(local), forKey: "userPrefs.region")
+        defaults.set(try JSONEncoder().encode(local), forKey: BackupUserDefaults.regionSelectionKey)
 
         var prefs = BackupUserDefaults()
         prefs.regionSelection = RegionSelection(countryCode: "US", source: .location)
         let setKeys = prefs.restore(to: defaults)
-        #expect(!setKeys.contains("userPrefs.region"))
+        #expect(!setKeys.contains(BackupUserDefaults.regionSelectionKey))
 
         let stillThere = try JSONDecoder().decode(
             RegionSelection.self,
-            from: defaults.data(forKey: "userPrefs.region")!
+            from: defaults.data(forKey: BackupUserDefaults.regionSelectionKey)!
         )
         #expect(stillThere == local)
     }
@@ -1897,10 +1897,10 @@ struct BackupIntegrationTests {
         prefs.regionSelection = RegionSelection(countryCode: "US", source: .location)
         let setKeys = prefs.restore(to: defaults)
 
-        #expect(setKeys.contains("userPrefs.region"))
+        #expect(setKeys.contains(BackupUserDefaults.regionSelectionKey))
         let restored = try JSONDecoder().decode(
             RegionSelection.self,
-            from: defaults.data(forKey: "userPrefs.region")!
+            from: defaults.data(forKey: BackupUserDefaults.regionSelectionKey)!
         )
         #expect(restored == prefs.regionSelection)
     }

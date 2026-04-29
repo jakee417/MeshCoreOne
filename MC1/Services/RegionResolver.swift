@@ -37,21 +37,21 @@ public final class RegionResolver {
             let key = CacheKey(loc)
             if let cached = cache[key], cached.isFresh { return cached.value }
 
-            let placemark = try await withTaskCancellationHandler {
+            let result = try await withTaskCancellationHandler {
                 try await geocoder.reverseGeocode(loc, preferredLocale: Self.geocodingLocale)
-            } onCancel: {
-                CLGeocoder().cancelGeocode()
+            } onCancel: { [geocoder] in
+                geocoder.cancelGeocode()
             }
 
-            guard let countryCode = placemark?.isoCountryCode else { return nil }
+            guard let countryCode = result?.countryCode else { return nil }
 
             let normalize: (String) -> String = {
                 $0.trimmingCharacters(in: .whitespacesAndNewlines)
                   .lowercased()
                   .folding(options: .diacriticInsensitive, locale: Self.geocodingLocale)
             }
-            let normalizedAdmin = placemark?.administrativeArea.map(normalize)
-            let normalizedCounty = placemark?.subAdministrativeArea
+            let normalizedAdmin = result?.administrativeArea.map(normalize)
+            let normalizedCounty = result?.subAdministrativeArea
                 .map(normalize)
                 .map { $0.replacingOccurrences(of: Self.countySuffix, with: "") }
 

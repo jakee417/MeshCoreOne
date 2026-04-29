@@ -12,6 +12,7 @@ struct RegionStepView: View {
     @State private var showManualPicker = false
     @State private var manualSelection: RegionSelection?
     @State private var commitTrigger = false
+    @State private var resolveAttempt = 0
 
     private var locationGranted: Bool {
         appState.locationService.isAuthorized
@@ -32,7 +33,7 @@ struct RegionStepView: View {
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .sensoryFeedback(.success, trigger: commitTrigger)
-        .task(id: locationGranted) {
+        .task(id: resolveAttempt) {
             guard locationGranted, !showManualPicker else {
                 isResolving = false
                 return
@@ -43,6 +44,10 @@ struct RegionStepView: View {
             if resolved == nil {
                 showManualPicker = true
             }
+        }
+        .onChange(of: locationGranted) { _, _ in
+            // Permission flipped (user granted/revoked from Settings); re-fire the resolver.
+            resolveAttempt += 1
         }
     }
 
@@ -61,7 +66,7 @@ struct RegionStepView: View {
 
     private func detectedState(region: RegionSelection) -> some View {
         VStack(spacing: OnboardingMetrics.cardSpacing) {
-            VStack(spacing: 8) {
+            VStack(spacing: OnboardingMetrics.titleStackSpacing) {
                 Text(L10n.Onboarding.Region.title)
                     .font(.largeTitle)
                     .bold()
@@ -71,11 +76,11 @@ struct RegionStepView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(.top, 40)
+            .padding(.top, OnboardingMetrics.headerTopPadding)
 
             Spacer()
 
-            VStack(spacing: 8) {
+            VStack(spacing: OnboardingMetrics.titleStackSpacing) {
                 Text(L10n.Onboarding.Region.Detected.tag)
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.tint)
@@ -91,12 +96,14 @@ struct RegionStepView: View {
             .frame(maxWidth: .infinity)
             .liquidGlass(in: .rect(cornerRadius: OnboardingMetrics.cardCornerRadius))
             .padding(.horizontal)
+            .accessibilityElement(children: .combine)
 
             Button(L10n.Onboarding.Region.chooseAnother) {
                 showManualPicker = true
             }
             .font(.subheadline)
-            .foregroundStyle(.secondary)
+            .buttonStyle(.bordered)
+            .tint(.accentColor)
             .frame(minHeight: OnboardingMetrics.minHitTarget)
 
             Spacer()
@@ -119,7 +126,7 @@ struct RegionStepView: View {
 
     private var manualPickerState: some View {
         VStack(spacing: OnboardingMetrics.cardSpacing) {
-            VStack(spacing: 8) {
+            VStack(spacing: OnboardingMetrics.titleStackSpacing) {
                 Text(L10n.Onboarding.Region.title)
                     .font(.largeTitle)
                     .bold()
@@ -129,29 +136,42 @@ struct RegionStepView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(.top, 40)
+            .padding(.top, OnboardingMetrics.headerTopPadding)
 
-            RegionPickerView(
-                selection: $manualSelection,
-                onCommit: {
-                    if let manualSelection {
-                        appState.regionSelection = manualSelection
-                        commitTrigger.toggle()
-                        appState.onboarding.onboardingPath.append(.preset)
-                    }
-                }
-            )
+            RegionPickerView(selection: $manualSelection)
 
             if locationGranted {
                 Button(L10n.Onboarding.Region.useMyLocation) {
+                    // Clear any prior resolve so the view shows the spinner while the
+                    // re-resolve runs, instead of flashing the previous detected region.
+                    resolved = nil
                     showManualPicker = false
+                    isResolving = true
+                    resolveAttempt += 1
                 }
                 .font(.subheadline)
                 .foregroundStyle(.tint)
                 .frame(minHeight: OnboardingMetrics.minHitTarget)
             }
+
+            Button {
+                guard let manualSelection else { return }
+                appState.regionSelection = manualSelection
+                commitTrigger.toggle()
+                appState.onboarding.onboardingPath.append(.preset)
+            } label: {
+                Text(L10n.Onboarding.Region.continue)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
+            .liquidGlassProminentButtonStyle()
+            .disabled(manualSelection == nil)
+            .padding(.horizontal)
+            .padding(.bottom)
         }
     }
+
 }
 
 #Preview {

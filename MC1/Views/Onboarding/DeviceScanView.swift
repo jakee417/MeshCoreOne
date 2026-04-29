@@ -10,7 +10,6 @@ struct DeviceScanView: View {
     @State private var failureHapticTrigger = false
     @State private var demoModeUnlockTrigger = false
     @State private var didInitiatePairing = false
-    @State private var tapTimes: [Date] = []
     @State private var showDemoModeAlert = false
     @State private var otherAppDeviceID: UUID?
     private var demoModeManager = DemoModeManager.shared
@@ -24,15 +23,13 @@ struct DeviceScanView: View {
             VStack(spacing: 12) {
                 PulsingAntenna()
 
-                Button {
-                    handleTitleTap()
-                } label: {
-                    Text(L10n.Onboarding.DeviceScan.title)
-                        .font(.largeTitle)
-                        .bold()
-                        .accessibilityHeading(.h1)
-                }
-                .buttonStyle(.plain)
+                Text(L10n.Onboarding.DeviceScan.title)
+                    .font(.largeTitle)
+                    .bold()
+                    .accessibilityAddTraits(.isHeader)
+                    .simultaneousGesture(
+                        TapGesture(count: 3).onEnded { unlockDemoMode() }
+                    )
 
                 if !hasConnectedDevice {
                     Text(L10n.Onboarding.DeviceScan.subtitle)
@@ -47,7 +44,7 @@ struct DeviceScanView: View {
 
             if hasConnectedDevice && !didInitiatePairing {
                 VStack(spacing: 12) {
-                    Text("\(L10n.Onboarding.DeviceScan.alreadyPaired) 🎉")
+                    Text(L10n.Onboarding.DeviceScan.alreadyPaired)
                         .font(.title2)
                         .multilineTextAlignment(.center)
                 }
@@ -84,7 +81,7 @@ struct DeviceScanView: View {
                         showingNoDeviceSheet = true
                     }
                     .font(.subheadline)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.secondary)
                     .padding(.vertical, 8)
                     .frame(minHeight: OnboardingMetrics.minHitTarget)
                 }
@@ -95,6 +92,13 @@ struct DeviceScanView: View {
         .sensoryFeedback(.success, trigger: pairingSuccessTrigger)
         .sensoryFeedback(.success, trigger: demoModeUnlockTrigger)
         .sensoryFeedback(.error, trigger: failureHapticTrigger)
+        .onChange(of: appState.connectionUI.otherAppWarningDeviceID) { _, newValue in
+            // retryFailedPairingConnect surfaces other-app failures via the ConnectionUI alert
+            // without going through startPairing's local catch, so we mirror the warning ID
+            // into local state to keep the recovery CTA pinned to "Retry connection" after
+            // the user dismisses the alert.
+            if let id = newValue { otherAppDeviceID = id }
+        }
         .sheet(isPresented: $showTroubleshooting) {
             TroubleshootingSheet()
         }
@@ -224,17 +228,11 @@ struct DeviceScanView: View {
         }
     }
 
-    /// 3-tap easter egg for App Store reviewers — preserved verbatim per CLAUDE.md `demo-mode-is-for-app-store-reviewers`.
-    private func handleTitleTap() {
-        let now = Date()
-        tapTimes.append(now)
-        tapTimes = tapTimes.filter { now.timeIntervalSince($0) <= 1.0 }
-        if tapTimes.count >= 3 {
-            tapTimes.removeAll()
-            demoModeManager.unlock()
-            demoModeUnlockTrigger.toggle()
-            showDemoModeAlert = true
-        }
+    /// 3-tap easter egg for App Store reviewers — preserved per CLAUDE.md `demo-mode-is-for-app-store-reviewers`.
+    private func unlockDemoMode() {
+        demoModeManager.unlock()
+        demoModeUnlockTrigger.toggle()
+        showDemoModeAlert = true
     }
 }
 

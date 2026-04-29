@@ -51,7 +51,8 @@ public struct BackupUserDefaults: Codable, Sendable, Equatable {
     private static let autoDeleteStaleNodesDaysKey = "autoDeleteStaleNodesDays"
     private static let frequentEmojisKey = "frequentEmojis"
     private static let recentReactionEmojisKey = "recentReactionEmojis"
-    private static let regionSelectionKey = "userPrefs.region"
+    /// Public so `AppState` (and tests) can persist via the same key without a duplicated literal.
+    public static let regionSelectionKey = "userPrefs.region"
 
     // MARK: - UserDefaults key mapping
 

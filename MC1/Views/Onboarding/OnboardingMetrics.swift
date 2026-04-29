@@ -9,4 +9,6 @@ enum OnboardingMetrics {
     static let contentPadding: CGFloat = 20
     static let ctaCornerRadius: CGFloat = 14
     static let minHitTarget: CGFloat = 44
+    static let headerTopPadding: CGFloat = 40
+    static let titleStackSpacing: CGFloat = 8
 }

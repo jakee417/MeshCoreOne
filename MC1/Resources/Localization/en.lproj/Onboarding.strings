@@ -204,6 +204,9 @@
 /* Location: PresetStepView.swift - Already-configured secondary link */
 "preset.alreadyConfigured.choose" = "Choose a different preset";
 
+/* Location: PresetStepView.apply(id:) - Error shown when user taps Apply before services finished wiring */
+"preset.error.notConnected" = "Connect to your device to apply this preset.";
+
 // MARK: - WiFi Connection Sheet
 
 /* Location: WiFiConnectionSheet.swift - Navigation title */
