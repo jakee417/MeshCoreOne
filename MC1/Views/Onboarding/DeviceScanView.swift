@@ -9,6 +9,7 @@ struct DeviceScanView: View {
     @State private var showingWiFiConnection = false
     @State private var pairingSuccessTrigger = false
     @State private var demoModeUnlockTrigger = false
+    @State private var failureHapticTrigger = false
     @State private var didInitiatePairing = false
     @State private var tapTimes: [Date] = []
     @State private var showDemoModeAlert = false
@@ -187,6 +188,7 @@ struct DeviceScanView: View {
         }
         .sensoryFeedback(.success, trigger: pairingSuccessTrigger)
         .sensoryFeedback(.success, trigger: demoModeUnlockTrigger)
+        .sensoryFeedback(.error, trigger: failureHapticTrigger)
         .sheet(isPresented: $showTroubleshooting) {
             TroubleshootingSheet()
         }
@@ -235,6 +237,7 @@ struct DeviceScanView: View {
                 if case .deviceConnectedToOtherApp(let deviceID) = pairingError {
                     otherAppDeviceID = deviceID
                 }
+                failureHapticTrigger.toggle()
                 appState.connectionUI.presentPairingFailure(pairingError)
             } catch {
                 // Other errors - show via AppState's alert
