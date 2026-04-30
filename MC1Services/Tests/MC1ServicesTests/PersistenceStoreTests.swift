@@ -1576,4 +1576,45 @@ struct PersistenceStoreTests {
         let ghostLookup = try await store.fetchDevice(id: ghost.id)
         #expect(ghostLookup == nil)
     }
+
+    @Test("reconcileGhostIdentity preserves non-BLE methods from backup ghost")
+    func reconcileGhostIdentityPreservesBackupWiFiMethods() async throws {
+        let store = try await createTestStore()
+
+        let restoredPublicKey = Data((0..<ProtocolLimits.publicKeySize).map { _ in UInt8.random(in: 0...255) })
+        let backupWiFi = ConnectionMethod.wifi(host: "10.0.0.7", port: 5000, displayName: "Backup WiFi")
+
+        let ghostRadioID = UUID()
+        let ghost = createTestDevice().copy {
+            $0.publicKey = restoredPublicKey
+            $0.radioID = ghostRadioID
+            $0.isActive = false
+            $0.connectionMethods = [backupWiFi]
+        }
+        try await store.saveDevice(ghost)
+
+        let currentBLE = ConnectionMethod.bluetooth(peripheralUUID: UUID(), displayName: "Current BLE")
+        let current = createTestDevice().copy {
+            $0.publicKey = Data((0..<ProtocolLimits.publicKeySize).map { _ in UInt8.random(in: 0...255) })
+            $0.radioID = UUID()
+            $0.isActive = true
+            $0.connectionMethods = [currentBLE]
+        }
+        try await store.saveDevice(current)
+
+        let result = try await store.reconcileGhostIdentity(
+            currentDeviceID: current.id,
+            newPublicKey: restoredPublicKey
+        )
+
+        #expect(result == ghostRadioID)
+
+        let updated = try #require(await store.fetchDevice(id: current.id))
+        #expect(updated.connectionMethods.contains(currentBLE))
+        #expect(updated.connectionMethods.contains(backupWiFi))
+        #expect(updated.connectionMethods.filter(\.isBluetooth).count == 1)
+
+        let ghostLookup = try await store.fetchDevice(id: ghost.id)
+        #expect(ghostLookup == nil)
+    }
 }

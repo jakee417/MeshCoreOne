@@ -287,6 +287,47 @@ struct MeshCoreSessionCommandCorrelationTests {
         await session.stop()
     }
 
+    @Test("importPrivateKey refreshes cached self info after OK")
+    func importPrivateKeyRefreshesCachedSelfInfoAfterOK() async throws {
+        let transport = MockTransport()
+        let session = MeshCoreSession(
+            transport: transport,
+            configuration: SessionConfiguration(defaultTimeout: 0.2, clientIdentifier: "MCTst")
+        )
+
+        let originalPublicKey = Data(repeating: 0x01, count: 32)
+        let restoredPublicKey = Data(repeating: 0x44, count: 32)
+
+        try await startSession(
+            session,
+            transport: transport,
+            selfInfoPacket: makeSelfInfoPacket(publicKey: originalPublicKey, name: "Temp")
+        )
+        #expect(await session.currentSelfInfo?.publicKey == originalPublicKey)
+
+        let importTask = Task {
+            try await session.importPrivateKey(Data(repeating: 0x33, count: 64))
+        }
+
+        try await waitUntil("importPrivateKey should be sent") {
+            await transport.sentData.count == 2
+        }
+
+        await transport.simulateOK()
+
+        try await waitUntil("appStart should be sent after importPrivateKey OK") {
+            await transport.sentData.count == 3
+        }
+
+        await transport.simulateReceive(makeSelfInfoPacket(publicKey: restoredPublicKey, name: "Restored"))
+        try await importTask.value
+
+        let selfInfo = try #require(await session.currentSelfInfo)
+        #expect(selfInfo.publicKey == restoredPublicKey)
+        #expect(selfInfo.name == "Restored")
+        await session.stop()
+    }
+
     @Test("exportPrivateKey throws featureDisabled on disabled response")
     func exportPrivateKeyThrowsFeatureDisabledOnDisabledResponse() async throws {
         let transport = MockTransport()
@@ -671,7 +712,8 @@ struct MeshCoreSessionCommandCorrelationTests {
 
 private func startSession(
     _ session: MeshCoreSession,
-    transport: MockTransport
+    transport: MockTransport,
+    selfInfoPacket: Data = makeSelfInfoPacket()
 ) async throws {
     let startTask = Task {
         try await session.start()
@@ -681,16 +723,19 @@ private func startSession(
         await transport.sentData.count == 1
     }
 
-    await transport.simulateReceive(makeSelfInfoPacket())
+    await transport.simulateReceive(selfInfoPacket)
     try await startTask.value
 }
 
-private func makeSelfInfoPacket() -> Data {
+private func makeSelfInfoPacket(
+    publicKey: Data = Data(repeating: 0x01, count: 32),
+    name: String = "Test"
+) -> Data {
     var payload = Data()
     payload.append(1)
     payload.append(UInt8(bitPattern: 22))
     payload.append(UInt8(bitPattern: 22))
-    payload.append(Data(repeating: 0x01, count: 32))
+    payload.append(publicKey)
     payload.append(contentsOf: withUnsafeBytes(of: Int32(0).littleEndian) { Array($0) })
     payload.append(contentsOf: withUnsafeBytes(of: Int32(0).littleEndian) { Array($0) })
     payload.append(0)
@@ -701,7 +746,7 @@ private func makeSelfInfoPacket() -> Data {
     payload.append(contentsOf: withUnsafeBytes(of: UInt32(125_000).littleEndian) { Array($0) })
     payload.append(7)
     payload.append(5)
-    payload.append(contentsOf: "Test".utf8)
+    payload.append(contentsOf: name.utf8)
 
     var packet = Data([ResponseCode.selfInfo.rawValue])
     packet.append(payload)

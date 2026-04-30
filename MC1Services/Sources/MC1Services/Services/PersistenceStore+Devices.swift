@@ -316,6 +316,11 @@ extension PersistenceStore {
         let newRadioID = ghost.radioID
         current.radioID = newRadioID
         current.publicKey = newPublicKey
+        for method in ghost.connectionMethods where !method.isBluetooth {
+            if !current.connectionMethods.contains(where: { $0.id == method.id }) {
+                current.connectionMethods.append(method)
+            }
+        }
 
         modelContext.delete(ghost)
         try modelContext.save()

@@ -1488,7 +1488,8 @@ public actor MeshCoreSession: MeshCoreSessionProtocol {
 
     /// Imports a private key into the device.
     ///
-    /// This replaces the device's cryptographic identity. Use with caution.
+    /// This replaces the device's cryptographic identity and refreshes cached self info.
+    /// Use with caution.
     ///
     /// - Parameter key: The 64-byte expanded private key to import.
     /// - Throws: ``MeshCoreError/featureDisabled`` if the device does not support key import,
@@ -1508,6 +1509,7 @@ public actor MeshCoreSession: MeshCoreSessionProtocol {
         if !succeeded {
             throw MeshCoreError.featureDisabled
         }
+        selfInfo = try await sendAppStart()
     }
 
     // MARK: - Stats Commands
