@@ -202,6 +202,7 @@ struct DeviceSelectionSheet: View {
     private func scanForNewDevice() {
         dismiss()
         Task {
+            await appState.connectionManager.stopBLEScanning()
             await appState.disconnect(reason: .switchingDevice)
             // Trigger ASK picker flow via AppState
             appState.startDeviceScan()
