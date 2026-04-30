@@ -967,6 +967,10 @@ public final class ConnectionManager {
         )
         await newServices.wireServices()
         await wireCleanChannelSyncCallback(on: newServices)
+        await newServices.nodeConfigService.setOnPostIdentityImport { [weak self, weak newServices] in
+            guard let self, let services = newServices else { return nil }
+            return try await self.reconcileIdentity(expectedServices: services, deviceID: deviceID)
+        }
         self.services = newServices
 
         async let existingDeviceResult = newServices.dataStore.fetchDevice(id: deviceID)
