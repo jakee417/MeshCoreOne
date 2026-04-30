@@ -1079,6 +1079,102 @@ public final class ConnectionManager {
         return true
     }
 
+    /// Re-evaluates the connected device's identity after `NodeConfigService.importIdentity`
+    /// has restored a privateKey on the radio. If the radio is now reporting a different
+    /// `publicKey` than the local Device row, attempts to reconcile against any ghost
+    /// carrying that publicKey (left by a prior "remove from MC1").
+    ///
+    /// Mirrors the `promoteToReady` lifecycle pattern: takes the `ServiceContainer`
+    /// the caller expects to still own, plus the `deviceID` it expects to still be
+    /// connected to. Bails out (returns `nil`) if either invariant fails before or
+    /// after the `currentSelfInfo` await — a competing reconnect cycle could otherwise
+    /// reconcile state onto the wrong connection.
+    ///
+    /// - Parameters:
+    ///   - expectedServices: The `ServiceContainer` captured at the start of the
+    ///     config-import operation. If `self.services` no longer points to it, the
+    ///     reconcile is silently skipped.
+    ///   - deviceID: The BLE peripheral UUID the import was started against.
+    /// - Returns: The new `radioID` if reconciliation reassigned the device,
+    ///   otherwise `nil` (no publicKey change, no matching ghost, or a guard tripped).
+    @discardableResult
+    public func reconcileIdentity(
+        expectedServices: ServiceContainer,
+        deviceID: UUID
+    ) async throws -> UUID? {
+        guard self.services === expectedServices else {
+            logger.info("reconcileIdentity skipped: services replaced before currentSelfInfo")
+            return nil
+        }
+        guard let preDevice = self.connectedDevice, preDevice.id == deviceID else {
+            logger.info("reconcileIdentity skipped: connectedDevice changed before currentSelfInfo")
+            return nil
+        }
+
+        let selfInfo: MeshCore.SelfInfo
+        do {
+            guard let info = await expectedServices.session.currentSelfInfo else {
+                logger.warning("reconcileIdentity failed: session.currentSelfInfo is nil")
+                return nil
+            }
+            selfInfo = info
+        }
+
+        guard self.services === expectedServices else {
+            logger.info("reconcileIdentity skipped: services replaced after currentSelfInfo")
+            return nil
+        }
+        guard self.connectedDevice?.id == deviceID else {
+            logger.info("reconcileIdentity skipped: connectedDevice changed after currentSelfInfo")
+            return nil
+        }
+
+        // No publicKey-equality short-circuit: after a partial-import + app restart,
+        // `buildServicesAndSaveDevice` finds the Device by BLE UUID and overwrites
+        // `Device.publicKey` with the restored key via `Device.apply(dto:)`. On the
+        // user's retry, `selfInfo.publicKey == connectedDevice.publicKey` even though
+        // `radioID` is still stale. Always ask `reconcileGhostIdentity` — its
+        // predicate handles the no-ghost case by returning nil, so the cost of an
+        // unconditional query is one cheap DB lookup per import.
+
+        let newRadioID: UUID?
+        do {
+            newRadioID = try await expectedServices.dataStore.reconcileGhostIdentity(
+                currentDeviceID: deviceID,
+                newPublicKey: selfInfo.publicKey
+            )
+        } catch {
+            logger.warning("reconcileIdentity: reconcileGhostIdentity failed: \(error.localizedDescription)")
+            return nil
+        }
+
+        guard let newRadioID else {
+            logger.info("reconcileIdentity: publicKey changed but no ghost matched")
+            return nil
+        }
+
+        // Final guard: the DB save just ran on a background actor; the connection
+        // could still have churned. Only mutate live state if the captured container
+        // is still authoritative.
+        guard self.services === expectedServices, self.connectedDevice?.id == deviceID else {
+            logger.info("reconcileIdentity: state churned after DB save; skipping in-memory refresh")
+            return newRadioID
+        }
+        if let refreshed = try? await expectedServices.dataStore.fetchDevice(id: deviceID),
+           self.services === expectedServices,
+           self.connectedDevice?.id == deviceID {
+            self.connectedDevice = refreshed
+            persistConnection(
+                deviceID: refreshed.id,
+                radioID: refreshed.radioID,
+                deviceName: refreshed.nodeName
+            )
+        }
+
+        logger.info("Reconciled identity to ghost radioID after key import: \(newRadioID)")
+        return newRadioID
+    }
+
     /// Syncs the device clock if it drifts more than 60 seconds from the phone.
     /// Safe to call after sync — only affects future device-originated timestamps.
     func syncDeviceTimeIfNeeded() async {
