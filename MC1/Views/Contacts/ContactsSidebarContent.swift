@@ -31,36 +31,13 @@ struct ContactsSidebarContent: View {
     let onSyncContacts: () async -> Void
     let onAnnounceOfflineStateIfNeeded: () -> Void
 
-    private var filterSection: some View {
-        Section {
-            EmptyView()
-        } header: {
-            NodeSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
-                .textCase(nil)
-                .listRowInsets(EdgeInsets())
-        }
-    }
-
-    @ViewBuilder
-    private var emptyStateRow: some View {
-        Section {
-            Group {
-                if filteredContacts.isEmpty && isSearching {
-                    ContactsSearchEmptyView(searchText: searchText)
-                } else {
-                    ContactsEmptyView(selectedSegment: selectedSegment)
-                }
-            }
-            .listRowSeparator(.hidden)
-            .listRowBackground(Color.clear)
-        }
-    }
-
     var body: some View {
         Group {
             if !viewModel.hasLoadedOnce {
                 List {
-                    filterSection
+                    PinnedFilterHeader {
+                        NodeSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
+                    }
                 }
                 .listStyle(.plain)
                 .overlay {
@@ -68,20 +45,20 @@ struct ContactsSidebarContent: View {
                 }
             } else if shouldUseSplitView {
                 ContactsSplitList(
-                    filteredContacts: filteredContacts,
-                    isSearching: isSearching,
-                    viewModel: viewModel,
+                    selectedSegment: $selectedSegment,
                     selectedContact: $selectedContact,
-                    filterHeader: { filterSection },
-                    emptyContent: { emptyStateRow }
+                    isSearching: isSearching,
+                    searchText: searchText,
+                    filteredContacts: filteredContacts,
+                    viewModel: viewModel
                 )
             } else {
                 ContactsCompactList(
-                    filteredContacts: filteredContacts,
+                    selectedSegment: $selectedSegment,
                     isSearching: isSearching,
-                    viewModel: viewModel,
-                    filterHeader: { filterSection },
-                    emptyContent: { emptyStateRow }
+                    searchText: searchText,
+                    filteredContacts: filteredContacts,
+                    viewModel: viewModel
                 )
             }
         }

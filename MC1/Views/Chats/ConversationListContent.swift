@@ -76,13 +76,7 @@ struct ConversationListContent: View {
     }
 
     private var filterSection: some View {
-        Section {
-            EmptyView()
-        } header: {
-            ChatFilterPicker(selection: $selectedFilter)
-                .textCase(nil)
-                .listRowInsets(EdgeInsets())
-        }
+        PinnedFilterHeader { ChatFilterPicker(selection: $selectedFilter) }
     }
 
     @ViewBuilder
@@ -99,9 +93,9 @@ struct ConversationListContent: View {
                     }
                 }
             }
-            .listRowSeparator(.hidden)
-            .listRowBackground(Color.clear)
         }
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
     }
 
     private var hasNoConversations: Bool {

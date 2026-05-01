@@ -1,23 +1,24 @@
 import SwiftUI
 import MC1Services
-import CoreLocation
 
-struct ContactsSplitList<FilterHeader: View, EmptyContent: View>: View {
+struct ContactsSplitList: View {
     @Environment(\.appState) private var appState
 
-    let filteredContacts: [ContactDTO]
-    let isSearching: Bool
-    let viewModel: ContactsViewModel
+    @Binding var selectedSegment: NodeSegment
     @Binding var selectedContact: ContactDTO?
-    @ViewBuilder let filterHeader: () -> FilterHeader
-    @ViewBuilder let emptyContent: () -> EmptyContent
+    let isSearching: Bool
+    let searchText: String
+    let filteredContacts: [ContactDTO]
+    let viewModel: ContactsViewModel
 
     var body: some View {
         List(selection: $selectedContact) {
-            filterHeader()
+            PinnedFilterHeader {
+                NodeSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
+            }
 
             if filteredContacts.isEmpty {
-                emptyContent()
+                emptyStateRow
             } else {
                 ForEach(Array(filteredContacts.enumerated()), id: \.element.id) { index, contact in
                     ContactRowView(
@@ -33,5 +34,18 @@ struct ContactsSplitList<FilterHeader: View, EmptyContent: View>: View {
             }
         }
         .listStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var emptyStateRow: some View {
+        Section {
+            if isSearching {
+                ContactsSearchEmptyView(searchText: searchText)
+            } else {
+                ContactsEmptyView(selectedSegment: selectedSegment)
+            }
+        }
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
     }
 }

@@ -37,28 +37,22 @@ struct DiscoveryView: View {
     }
 
     private var filterSection: some View {
-        Section {
-            EmptyView()
-        } header: {
+        PinnedFilterHeader {
             DiscoverSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
-                .textCase(nil)
-                .listRowInsets(EdgeInsets())
         }
     }
 
     @ViewBuilder
     private var emptyStateRow: some View {
         Section {
-            Group {
-                if isSearching {
-                    DiscoverySearchEmptyView(searchText: searchText)
-                } else {
-                    DiscoveryEmptyView()
-                }
+            if isSearching {
+                DiscoverySearchEmptyView(searchText: searchText)
+            } else {
+                DiscoveryEmptyView()
             }
-            .listRowSeparator(.hidden)
-            .listRowBackground(Color.clear)
         }
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
     }
 
     var body: some View {
