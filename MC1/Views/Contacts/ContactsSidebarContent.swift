@@ -31,40 +31,62 @@ struct ContactsSidebarContent: View {
     let onSyncContacts: () async -> Void
     let onAnnounceOfflineStateIfNeeded: () -> Void
 
+    private var filterSection: some View {
+        Section {
+            EmptyView()
+        } header: {
+            NodeSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
+                .textCase(nil)
+                .listRowInsets(EdgeInsets())
+        }
+    }
+
+    @ViewBuilder
+    private var emptyStateRow: some View {
+        Section {
+            Group {
+                if filteredContacts.isEmpty && isSearching {
+                    ContactsSearchEmptyView(searchText: searchText)
+                } else {
+                    ContactsEmptyView(selectedSegment: selectedSegment)
+                }
+            }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+        }
+    }
+
     var body: some View {
         Group {
             if !viewModel.hasLoadedOnce {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if filteredContacts.isEmpty && !isSearching {
-                ContactsEmptyView(selectedSegment: selectedSegment)
-            } else if filteredContacts.isEmpty && isSearching {
-                ContactsSearchEmptyView(searchText: searchText)
-            } else {
-                if shouldUseSplitView {
-                    ContactsSplitList(
-                        filteredContacts: filteredContacts,
-                        isSearching: isSearching,
-                        viewModel: viewModel,
-                        selectedContact: $selectedContact
-                    )
-                } else {
-                    ContactsCompactList(
-                        filteredContacts: filteredContacts,
-                        isSearching: isSearching,
-                        viewModel: viewModel
-                    )
+                List {
+                    filterSection
                 }
+                .listStyle(.plain)
+                .overlay {
+                    ProgressView()
+                }
+            } else if shouldUseSplitView {
+                ContactsSplitList(
+                    filteredContacts: filteredContacts,
+                    isSearching: isSearching,
+                    viewModel: viewModel,
+                    selectedContact: $selectedContact,
+                    filterHeader: { filterSection },
+                    emptyContent: { emptyStateRow }
+                )
+            } else {
+                ContactsCompactList(
+                    filteredContacts: filteredContacts,
+                    isSearching: isSearching,
+                    viewModel: viewModel,
+                    filterHeader: { filterSection },
+                    emptyContent: { emptyStateRow }
+                )
             }
         }
         .navigationTitle(L10n.Contacts.Contacts.List.title)
         .searchable(text: $searchText, prompt: searchPrompt)
-        .safeAreaInset(edge: .top, spacing: 0) {
-            NodeSegmentPicker(
-                selection: $selectedSegment,
-                isSearching: isSearching
-            )
-        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 BLEStatusIndicatorView()

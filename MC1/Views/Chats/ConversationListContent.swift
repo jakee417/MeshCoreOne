@@ -60,32 +60,52 @@ struct ConversationListContent: View {
     var body: some View {
         Group {
             if !hasLoadedOnce {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                List {
+                    filterSection
+                }
+                .listStyle(.plain)
+                .overlay {
+                    ProgressView()
+                }
             } else {
                 TimelineView(.everyMinute) { context in
                     listContent(referenceDate: context.date)
-                        .overlay {
-                            if favoriteConversations.isEmpty && otherConversations.isEmpty {
-                                ContentUnavailableView {
-                                    Label(emptyStateMessage.title, systemImage: emptyStateMessage.systemImage)
-                                } description: {
-                                    Text(emptyStateMessage.description)
-                                } actions: {
-                                    if selectedFilter != .all {
-                                        Button(L10n.Chats.Chats.Filter.clear) {
-                                            selectedFilter = .all
-                                        }
-                                    }
-                                }
-                            }
-                        }
                 }
             }
         }
-        .safeAreaInset(edge: .top, spacing: 0) {
+    }
+
+    private var filterSection: some View {
+        Section {
+            EmptyView()
+        } header: {
             ChatFilterPicker(selection: $selectedFilter)
+                .textCase(nil)
+                .listRowInsets(EdgeInsets())
         }
+    }
+
+    @ViewBuilder
+    private var emptyStateRow: some View {
+        Section {
+            ContentUnavailableView {
+                Label(emptyStateMessage.title, systemImage: emptyStateMessage.systemImage)
+            } description: {
+                Text(emptyStateMessage.description)
+            } actions: {
+                if selectedFilter != .all {
+                    Button(L10n.Chats.Chats.Filter.clear) {
+                        selectedFilter = .all
+                    }
+                }
+            }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+        }
+    }
+
+    private var hasNoConversations: Bool {
+        favoriteConversations.isEmpty && otherConversations.isEmpty
     }
 
     @ViewBuilder
@@ -93,65 +113,77 @@ struct ConversationListContent: View {
         switch mode {
         case .selection(let selection):
             List(selection: selection) {
-                Section {
-                    ForEach(favoriteConversations) { conversation in
-                        ConversationSelectionRow(
-                            conversation: conversation,
-                            viewModel: viewModel,
-                            referenceDate: referenceDate,
-                            onDelete: { onDeleteConversation(conversation) }
-                        )
-                    }
-                }
-                .accessibilityLabel(L10n.Chats.Chats.Section.favorites)
-                .accessibilityHidden(favoriteConversations.isEmpty)
+                filterSection
 
-                Section {
-                    ForEach(otherConversations) { conversation in
-                        ConversationSelectionRow(
-                            conversation: conversation,
-                            viewModel: viewModel,
-                            referenceDate: referenceDate,
-                            onDelete: { onDeleteConversation(conversation) }
-                        )
+                if hasNoConversations {
+                    emptyStateRow
+                } else {
+                    Section {
+                        ForEach(favoriteConversations) { conversation in
+                            ConversationSelectionRow(
+                                conversation: conversation,
+                                viewModel: viewModel,
+                                referenceDate: referenceDate,
+                                onDelete: { onDeleteConversation(conversation) }
+                            )
+                        }
                     }
+                    .accessibilityLabel(L10n.Chats.Chats.Section.favorites)
+                    .accessibilityHidden(favoriteConversations.isEmpty)
+
+                    Section {
+                        ForEach(otherConversations) { conversation in
+                            ConversationSelectionRow(
+                                conversation: conversation,
+                                viewModel: viewModel,
+                                referenceDate: referenceDate,
+                                onDelete: { onDeleteConversation(conversation) }
+                            )
+                        }
+                    }
+                    .accessibilityLabel(L10n.Chats.Chats.Section.conversations)
+                    .accessibilityHidden(otherConversations.isEmpty)
                 }
-                .accessibilityLabel(L10n.Chats.Chats.Section.conversations)
-                .accessibilityHidden(otherConversations.isEmpty)
             }
             .listStyle(.plain)
 
         case .navigation(let onNavigate, let onRequestRoomAuth):
             List {
-                Section {
-                    ForEach(favoriteConversations) { conversation in
-                        ConversationNavigationRow(
-                            conversation: conversation,
-                            viewModel: viewModel,
-                            referenceDate: referenceDate,
-                            onNavigate: onNavigate,
-                            onRequestRoomAuth: onRequestRoomAuth,
-                            onDelete: { onDeleteConversation(conversation) }
-                        )
-                    }
-                }
-                .accessibilityLabel(L10n.Chats.Chats.Section.favorites)
-                .accessibilityHidden(favoriteConversations.isEmpty)
+                filterSection
 
-                Section {
-                    ForEach(otherConversations) { conversation in
-                        ConversationNavigationRow(
-                            conversation: conversation,
-                            viewModel: viewModel,
-                            referenceDate: referenceDate,
-                            onNavigate: onNavigate,
-                            onRequestRoomAuth: onRequestRoomAuth,
-                            onDelete: { onDeleteConversation(conversation) }
-                        )
+                if hasNoConversations {
+                    emptyStateRow
+                } else {
+                    Section {
+                        ForEach(favoriteConversations) { conversation in
+                            ConversationNavigationRow(
+                                conversation: conversation,
+                                viewModel: viewModel,
+                                referenceDate: referenceDate,
+                                onNavigate: onNavigate,
+                                onRequestRoomAuth: onRequestRoomAuth,
+                                onDelete: { onDeleteConversation(conversation) }
+                            )
+                        }
                     }
+                    .accessibilityLabel(L10n.Chats.Chats.Section.favorites)
+                    .accessibilityHidden(favoriteConversations.isEmpty)
+
+                    Section {
+                        ForEach(otherConversations) { conversation in
+                            ConversationNavigationRow(
+                                conversation: conversation,
+                                viewModel: viewModel,
+                                referenceDate: referenceDate,
+                                onNavigate: onNavigate,
+                                onRequestRoomAuth: onRequestRoomAuth,
+                                onDelete: { onDeleteConversation(conversation) }
+                            )
+                        }
+                    }
+                    .accessibilityLabel(L10n.Chats.Chats.Section.conversations)
+                    .accessibilityHidden(otherConversations.isEmpty)
                 }
-                .accessibilityLabel(L10n.Chats.Chats.Section.conversations)
-                .accessibilityHidden(otherConversations.isEmpty)
             }
             .listStyle(.plain)
         }

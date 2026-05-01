@@ -36,20 +36,48 @@ struct DiscoveryView: View {
         )
     }
 
+    private var filterSection: some View {
+        Section {
+            EmptyView()
+        } header: {
+            DiscoverSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
+                .textCase(nil)
+                .listRowInsets(EdgeInsets())
+        }
+    }
+
+    @ViewBuilder
+    private var emptyStateRow: some View {
+        Section {
+            Group {
+                if isSearching {
+                    DiscoverySearchEmptyView(searchText: searchText)
+                } else {
+                    DiscoveryEmptyView()
+                }
+            }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+        }
+    }
+
     var body: some View {
         Group {
             if !viewModel.hasLoadedOnce {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if filteredNodes.isEmpty && !isSearching {
-                DiscoveryEmptyView()
-            } else if filteredNodes.isEmpty && isSearching {
-                DiscoverySearchEmptyView(searchText: searchText)
+                List {
+                    filterSection
+                }
+                .listStyle(.plain)
+                .overlay {
+                    ProgressView()
+                }
             } else {
                 DiscoveryNodesList(
                     filteredNodes: filteredNodes,
                     viewModel: viewModel,
-                    addingNodeID: $addingNodeID
+                    addingNodeID: $addingNodeID,
+                    filterHeader: { filterSection },
+                    emptyContent: { emptyStateRow }
                 )
             }
         }
@@ -71,9 +99,6 @@ struct DiscoveryView: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: L10n.Contacts.Contacts.Discovery.searchPrompt
         )
-        .safeAreaInset(edge: .top, spacing: 0) {
-            DiscoverSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
-        }
         .onChange(of: searchText) { _, newValue in
             if !newValue.isEmpty {
                 AccessibilityNotification.Announcement(L10n.Contacts.Contacts.Discovery.searchingAllTypes).post()
@@ -155,26 +180,34 @@ private struct DiscoverySearchEmptyView: View {
 
 // MARK: - Nodes List
 
-private struct DiscoveryNodesList: View {
+private struct DiscoveryNodesList<FilterHeader: View, EmptyContent: View>: View {
     @Environment(\.appState) private var appState
     let filteredNodes: [DiscoveredNodeDTO]
     let viewModel: DiscoveryViewModel
     @Binding var addingNodeID: UUID?
+    @ViewBuilder let filterHeader: () -> FilterHeader
+    @ViewBuilder let emptyContent: () -> EmptyContent
 
     var body: some View {
         List {
-            ForEach(filteredNodes) { node in
-                DiscoveryNodeRow(
-                    node: node,
-                    isAdded: viewModel.isAdded(node),
-                    isAdding: addingNodeID == node.id,
-                    onAdd: { addNode(node) },
-                    onDelete: {
-                        Task {
-                            await viewModel.deleteDiscoveredNode(node)
+            filterHeader()
+
+            if filteredNodes.isEmpty {
+                emptyContent()
+            } else {
+                ForEach(filteredNodes) { node in
+                    DiscoveryNodeRow(
+                        node: node,
+                        isAdded: viewModel.isAdded(node),
+                        isAdding: addingNodeID == node.id,
+                        onAdd: { addNode(node) },
+                        onDelete: {
+                            Task {
+                                await viewModel.deleteDiscoveredNode(node)
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
         .listStyle(.plain)
