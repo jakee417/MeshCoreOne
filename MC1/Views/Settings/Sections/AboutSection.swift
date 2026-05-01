@@ -4,7 +4,7 @@ import SwiftUI
 struct AboutSection: View {
     var body: some View {
         Section {
-            Link(destination: URL(string: "https://meshcore.co.uk")!) {
+            Link(destination: URL(string: "https://meshcore.io")!) {
                 HStack {
                     TintedLabel(L10n.Settings.About.website, systemImage: "globe")
                     Spacer()
