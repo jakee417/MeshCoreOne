@@ -42,20 +42,11 @@ struct DiscoveryView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if filteredNodes.isEmpty && !isSearching {
-                DiscoveryEmptyView(
-                    selectedSegment: $selectedSegment,
-                    isSearching: isSearching
-                )
+                DiscoveryEmptyView()
             } else if filteredNodes.isEmpty && isSearching {
-                DiscoverySearchEmptyView(
-                    selectedSegment: $selectedSegment,
-                    isSearching: isSearching,
-                    searchText: searchText
-                )
+                DiscoverySearchEmptyView(searchText: searchText)
             } else {
                 DiscoveryNodesList(
-                    selectedSegment: $selectedSegment,
-                    isSearching: isSearching,
                     filteredNodes: filteredNodes,
                     viewModel: viewModel,
                     addingNodeID: $addingNodeID
@@ -80,6 +71,9 @@ struct DiscoveryView: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: L10n.Contacts.Contacts.Discovery.searchPrompt
         )
+        .safeAreaInset(edge: .top, spacing: 0) {
+            DiscoverSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
+        }
         .onChange(of: searchText) { _, newValue in
             if !newValue.isEmpty {
                 AccessibilityNotification.Announcement(L10n.Contacts.Contacts.Discovery.searchingAllTypes).post()
@@ -136,47 +130,26 @@ struct DiscoveryView: View {
 // MARK: - Empty View
 
 private struct DiscoveryEmptyView: View {
-    @Binding var selectedSegment: DiscoverSegment
-    let isSearching: Bool
-
     var body: some View {
-        VStack {
-            DiscoverSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
-
-            Spacer()
-
-            ContentUnavailableView(
-                L10n.Contacts.Contacts.Discovery.Empty.title,
-                systemImage: "antenna.radiowaves.left.and.right",
-                description: Text(L10n.Contacts.Contacts.Discovery.Empty.description)
-            )
-
-            Spacer()
-        }
+        ContentUnavailableView(
+            L10n.Contacts.Contacts.Discovery.Empty.title,
+            systemImage: "antenna.radiowaves.left.and.right",
+            description: Text(L10n.Contacts.Contacts.Discovery.Empty.description)
+        )
     }
 }
 
 // MARK: - Search Empty View
 
 private struct DiscoverySearchEmptyView: View {
-    @Binding var selectedSegment: DiscoverSegment
-    let isSearching: Bool
     let searchText: String
 
     var body: some View {
-        VStack {
-            DiscoverSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
-
-            Spacer()
-
-            ContentUnavailableView(
-                L10n.Contacts.Contacts.Discovery.Empty.Search.title,
-                systemImage: "magnifyingglass",
-                description: Text(L10n.Contacts.Contacts.Discovery.Empty.Search.description(searchText))
-            )
-
-            Spacer()
-        }
+        ContentUnavailableView(
+            L10n.Contacts.Contacts.Discovery.Empty.Search.title,
+            systemImage: "magnifyingglass",
+            description: Text(L10n.Contacts.Contacts.Discovery.Empty.Search.description(searchText))
+        )
     }
 }
 
@@ -184,21 +157,12 @@ private struct DiscoverySearchEmptyView: View {
 
 private struct DiscoveryNodesList: View {
     @Environment(\.appState) private var appState
-    @Binding var selectedSegment: DiscoverSegment
-    let isSearching: Bool
     let filteredNodes: [DiscoveredNodeDTO]
     let viewModel: DiscoveryViewModel
     @Binding var addingNodeID: UUID?
 
     var body: some View {
         List {
-            Section {
-                DiscoverSegmentPicker(selection: $selectedSegment, isSearching: isSearching)
-            }
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
-            .listSectionSeparator(.hidden)
-
             ForEach(filteredNodes) { node in
                 DiscoveryNodeRow(
                     node: node,
