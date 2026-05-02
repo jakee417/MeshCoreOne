@@ -505,9 +505,13 @@ public actor ChannelService {
     public func clearChannelMessages(radioID: UUID, channelIndex: UInt8) async throws {
         try await dataStore.deleteMessagesForChannel(radioID: radioID, channelIndex: channelIndex)
 
-        // Clear the last message date so the channel doesn't show a preview
+        // Clear the last message date so the channel doesn't show a preview, and zero
+        // both unread counters — leaving them set would inflate the badge for a channel
+        // the user just emptied.
         if let channel = try await dataStore.fetchChannel(radioID: radioID, index: channelIndex) {
             try await dataStore.updateChannelLastMessage(channelID: channel.id, date: nil)
+            try await dataStore.clearChannelUnreadCount(channelID: channel.id)
+            try await dataStore.clearChannelUnreadMentionCount(channelID: channel.id)
         }
     }
 

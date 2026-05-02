@@ -1201,6 +1201,74 @@ struct PersistenceStoreTests {
         #expect(contacts == 2, "Blocked contacts should not contribute to unread count total")
     }
 
+    @Test("Get total unread counts excludes repeater contacts")
+    func getTotalUnreadCountsExcludesRepeaterContacts() async throws {
+        let store = try await createTestStore()
+        let device = createTestDevice()
+        try await store.saveDevice(device)
+
+        // Regular chat contact: visible in the chats list, contributes to badge
+        let chatFrame = createTestContactFrame(name: "ChatContact")
+        let chatContactID = try await store.saveContact(radioID: device.id, from: chatFrame)
+        try await store.incrementUnreadCount(contactID: chatContactID)
+        try await store.incrementUnreadCount(contactID: chatContactID)
+
+        // Repeater contact: filtered out of chats list, must not contribute to badge
+        let repeaterFrame = ContactFrame(
+            publicKey: Data((0..<ProtocolLimits.publicKeySize).map { _ in UInt8.random(in: 0...255) }),
+            type: .repeater,
+            flags: 0,
+            outPathLength: 2,
+            outPath: Data([0x01, 0x02]),
+            name: "RepeaterContact",
+            lastAdvertTimestamp: UInt32(Date().timeIntervalSince1970),
+            latitude: 0,
+            longitude: 0,
+            lastModified: UInt32(Date().timeIntervalSince1970)
+        )
+        let repeaterID = try await store.saveContact(radioID: device.id, from: repeaterFrame)
+        try await store.incrementUnreadCount(contactID: repeaterID)
+        try await store.incrementUnreadCount(contactID: repeaterID)
+        try await store.incrementUnreadCount(contactID: repeaterID)
+
+        let (contacts, _, _) = try await store.getTotalUnreadCounts(radioID: device.id)
+        #expect(contacts == 2, "Repeater-type contacts should not contribute to badge total")
+    }
+
+    @Test("Get total unread counts excludes repeater-role sessions")
+    func getTotalUnreadCountsExcludesRepeaterSessions() async throws {
+        let store = try await createTestStore()
+        let device = createTestDevice()
+        try await store.saveDevice(device)
+
+        // Room session: visible in the chats list, contributes to badge
+        let roomSession = createTestRoomSession(radioID: device.id)
+        try await store.saveRemoteNodeSessionDTO(roomSession)
+        try await store.incrementRoomUnreadCount(roomSession.id)
+        try await store.incrementRoomUnreadCount(roomSession.id)
+
+        // Repeater-role admin session: filtered out of chats list, must not contribute
+        let repeaterSession = RemoteNodeSessionDTO(
+            id: UUID(),
+            radioID: device.id,
+            publicKey: Data((0..<ProtocolLimits.publicKeySize).map { _ in UInt8.random(in: 0...255) }),
+            name: "RepeaterAdmin",
+            role: .repeater,
+            latitude: 0,
+            longitude: 0,
+            isConnected: false,
+            permissionLevel: .guest,
+            lastSyncTimestamp: 0
+        )
+        try await store.saveRemoteNodeSessionDTO(repeaterSession)
+        try await store.incrementRoomUnreadCount(repeaterSession.id)
+        try await store.incrementRoomUnreadCount(repeaterSession.id)
+        try await store.incrementRoomUnreadCount(repeaterSession.id)
+
+        let (_, _, rooms) = try await store.getTotalUnreadCounts(radioID: device.id)
+        #expect(rooms == 2, "Repeater-role sessions should not contribute to badge total")
+    }
+
     // MARK: - Warm-up Test
 
     @Test("Database warm-up")
