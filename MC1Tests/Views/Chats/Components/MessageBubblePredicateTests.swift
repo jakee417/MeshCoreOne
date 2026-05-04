@@ -6,13 +6,21 @@ import Foundation
 @Suite("MessageBubblePredicates")
 struct MessageBubblePredicateTests {
 
-    @Test("showHop true when flag set AND message is flood-routed")
-    func showHop_floodRoutedWithFlag() {
+    @Test("showHop: gated by both flag AND isFloodRouted", arguments: [
+        // (showFlag, routeType, expected)
+        (true,  RouteType.flood,    true),    // gate open
+        (true,  RouteType.tcFlood,  true),    // tcFlood is treated as flood
+        (true,  RouteType.direct,   false),   // direct-routed must suppress hop even with flag on
+        (true,  RouteType.tcDirect, false),   // tcDirect is treated as direct
+        (false, RouteType.flood,    false),   // flag off
+        (false, RouteType.direct,   false),
+    ])
+    func showHop(showFlag: Bool, routeType: RouteType, expected: Bool) {
         let predicates = MessageBubblePredicates(
-            message: makeMessage(routeType: .flood),
-            displayState: makeState(showIncomingHopCount: true)
+            message: makeMessage(routeType: routeType),
+            displayState: makeState(showIncomingHopCount: showFlag)
         )
-        #expect(predicates.showHop == true)
+        #expect(predicates.showHop == expected)
     }
 
     // MARK: - Helpers
