@@ -4979,6 +4979,8 @@ public enum L10n {
         public static func receivedTimes(_ p1: Int) -> String {
           return L10n.tr("Tools", "tools.rxLog.receivedTimes", p1, fallback: "Received %lld times")
         }
+        /// Location: RxLogView.swift - Region label
+        public static let regionLabel = L10n.tr("Tools", "tools.rxLog.regionLabel", fallback: "Region:")
         /// Location: RxLogView.swift - Filter menu section header
         public static let routeType = L10n.tr("Tools", "tools.rxLog.routeType", fallback: "Route Type")
         /// Location: RxLogView.swift - RSSI label

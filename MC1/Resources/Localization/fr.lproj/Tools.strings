@@ -127,6 +127,9 @@
 /* Location: RxLogView.swift - Channel name label */
 "tools.rxLog.channelNameLabel" = "Nom du canal :";
 
+/* Location: RxLogView.swift - Region label */
+"tools.rxLog.regionLabel" = "Région :";
+
 /* Location: RxLogView.swift - Text label */
 "tools.rxLog.textLabel" = "Texte :";
 
