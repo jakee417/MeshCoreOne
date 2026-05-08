@@ -464,6 +464,15 @@
 /* Location: RepeaterStatusView.swift - SNR display format */
 "remoteNodes.status.snrFormat" = "SNR %@dB";
 
+/* Location: RepeaterStatusView.swift - Accessibility label for possible match indicator */
+"remoteNodes.status.possibleMatch" = "Posible coincidencia, emparejada por prefijo corto";
+
+/* Location: RepeaterStatusView.swift - Title for possible match explanation popover */
+"remoteNodes.status.possibleMatchTitle" = "Posible Coincidencia";
+
+/* Location: RepeaterStatusView.swift - Explanation of what a possible match means */
+"remoteNodes.status.possibleMatchExplanation" = "Varios nodos comparten este prefijo. El nombre mostrado puede no ser correcto.";
+
 // MARK: - Repeater Status ViewModel Messages
 
 /* Location: RepeaterStatusViewModel.swift - Request timed out */

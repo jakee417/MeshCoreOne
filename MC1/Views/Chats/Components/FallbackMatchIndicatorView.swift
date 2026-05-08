@@ -3,7 +3,24 @@ import SwiftUI
 
 /// Tappable indicator showing a node name was resolved from a short prefix with multiple matches.
 struct FallbackMatchIndicatorView: View {
+    let accessibilityLabel: String
+    let accessibilityHint: String
+    let title: String
+    let explanation: String
+
     @State private var isShowingExplanation = false
+
+    init(
+        accessibilityLabel: String = L10n.Chats.Chats.Path.Hop.possibleMatch,
+        accessibilityHint: String = L10n.Chats.Chats.Path.Hop.possibleMatchExplanation,
+        title: String = L10n.Chats.Chats.Path.Hop.possibleMatchTitle,
+        explanation: String = L10n.Chats.Chats.Path.Hop.possibleMatchExplanation
+    ) {
+        self.accessibilityLabel = accessibilityLabel
+        self.accessibilityHint = accessibilityHint
+        self.title = title
+        self.explanation = explanation
+    }
 
     var body: some View {
         Button {
@@ -14,24 +31,21 @@ struct FallbackMatchIndicatorView: View {
                 .foregroundStyle(.secondary)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(L10n.Chats.Chats.Path.Hop.possibleMatch)
-        .accessibilityHint(L10n.Chats.Chats.Path.Hop.possibleMatchExplanation)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityHint(accessibilityHint)
         .popover(isPresented: $isShowingExplanation) {
-            VStack(alignment: .leading, spacing: 12) {
-                Label {
-                    Text(L10n.Chats.Chats.Path.Hop.possibleMatchTitle)
-                        .font(.headline)
-                } icon: {
-                    Image(systemName: "questionmark.circle")
-                        .foregroundStyle(.secondary)
-                }
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.headline)
 
-                Text(L10n.Chats.Chats.Path.Hop.possibleMatchExplanation)
+                Text(explanation)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding()
-            .frame(maxWidth: 300)
+            .frame(idealWidth: 280, maxWidth: 300)
+            .presentationSizing(.fitted)
             .presentationCompactAdaptation(.popover)
         }
     }

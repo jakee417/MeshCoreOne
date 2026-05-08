@@ -461,6 +461,15 @@
 /* Location: RepeaterStatusView.swift - SNR display format */
 "remoteNodes.status.snrFormat" = "SNR %@ дБ";
 
+/* Location: RepeaterStatusView.swift - Accessibility label for possible match indicator */
+"remoteNodes.status.possibleMatch" = "Можливий збіг, визначено за коротким префіксом";
+
+/* Location: RepeaterStatusView.swift - Title for possible match explanation popover */
+"remoteNodes.status.possibleMatchTitle" = "Можливий Збіг";
+
+/* Location: RepeaterStatusView.swift - Explanation of what a possible match means */
+"remoteNodes.status.possibleMatchExplanation" = "Кілька вузлів мають цей префікс. Відображене ім'я може бути невірним.";
+
 // MARK: - Repeater Status ViewModel Messages
 
 /* Location: RepeaterStatusViewModel.swift - Request timed out */

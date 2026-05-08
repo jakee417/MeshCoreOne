@@ -244,7 +244,7 @@ private struct NeighborsSection: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(viewModel.neighbors, id: \.publicKeyPrefix) { neighbor in
-                        let resolvedName = NeighborNameResolver.resolveName(
+                        let resolution = NeighborNameResolver.resolve(
                             for: neighbor.publicKeyPrefix,
                             contacts: contacts,
                             discoveredNodes: discoveredNodes,
@@ -252,14 +252,15 @@ private struct NeighborsSection: View {
                         )
                         NavigationLink {
                             NeighborSNRChartView(
-                                name: resolvedName ?? L10n.RemoteNodes.RemoteNodes.Status.unknown,
+                                name: resolution?.displayName ?? L10n.RemoteNodes.RemoteNodes.Status.unknown,
                                 neighborPrefix: neighbor.publicKeyPrefix,
                                 fetchSnapshots: viewModel.helper.fetchHistory
                             )
                         } label: {
                             NeighborRow(
                                 neighbor: neighbor,
-                                displayName: resolvedName ?? L10n.RemoteNodes.RemoteNodes.Status.unknown,
+                                displayName: resolution?.displayName ?? L10n.RemoteNodes.RemoteNodes.Status.unknown,
+                                matchKind: resolution?.matchKind ?? .unresolved,
                                 previousNeighbor: viewModel.helper.previousSnapshot?.neighborSnapshots?.first {
                                     $0.publicKeyPrefix == neighbor.publicKeyPrefix
                                 },
@@ -272,7 +273,7 @@ private struct NeighborsSection: View {
                         let currentPrefixes = Set(viewModel.neighbors.map(\.publicKeyPrefix))
                         let disappeared = previousNeighbors.filter { !currentPrefixes.contains($0.publicKeyPrefix) }
                         ForEach(disappeared, id: \.publicKeyPrefix) { old in
-                            let resolvedName = NeighborNameResolver.resolveName(
+                            let resolution = NeighborNameResolver.resolve(
                                 for: old.publicKeyPrefix,
                                 contacts: contacts,
                                 discoveredNodes: discoveredNodes,
@@ -280,7 +281,8 @@ private struct NeighborsSection: View {
                             )
                             DisappearedNeighborRow(
                                 neighbor: old,
-                                displayName: resolvedName ?? NeighborNameResolver.fallbackName(for: old.publicKeyPrefix)
+                                displayName: resolution?.displayName ?? NeighborNameResolver.fallbackName(for: old.publicKeyPrefix),
+                                matchKind: resolution?.matchKind ?? .unresolved
                             )
                         }
                     }
@@ -376,17 +378,20 @@ private struct NeighborSNRChartView: View {
 private struct NeighborRow: View {
     let neighbor: NeighbourInfo
     let displayName: String
+    let matchKind: NodeNameMatchKind
     let previousNeighbor: NeighborSnapshotEntry?
     let hasPreviousSnapshot: Bool
 
     init(
         neighbor: NeighbourInfo,
         displayName: String,
+        matchKind: NodeNameMatchKind,
         previousNeighbor: NeighborSnapshotEntry? = nil,
         hasPreviousSnapshot: Bool = false
     ) {
         self.neighbor = neighbor
         self.displayName = displayName
+        self.matchKind = matchKind
         self.previousNeighbor = previousNeighbor
         self.hasPreviousSnapshot = hasPreviousSnapshot
     }
@@ -402,6 +407,15 @@ private struct NeighborRow: View {
                             .font(.caption2)
                             .bold()
                             .foregroundStyle(.green)
+                    }
+
+                    if matchKind == .fallback {
+                        FallbackMatchIndicatorView(
+                            accessibilityLabel: L10n.RemoteNodes.RemoteNodes.Status.possibleMatch,
+                            accessibilityHint: L10n.RemoteNodes.RemoteNodes.Status.possibleMatchExplanation,
+                            title: L10n.RemoteNodes.RemoteNodes.Status.possibleMatchTitle,
+                            explanation: L10n.RemoteNodes.RemoteNodes.Status.possibleMatchExplanation
+                        )
                     }
                 }
 
@@ -461,11 +475,22 @@ private struct NeighborRow: View {
 private struct DisappearedNeighborRow: View {
     let neighbor: NeighborSnapshotEntry
     let displayName: String
+    let matchKind: NodeNameMatchKind
 
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(displayName)
+                HStack(spacing: 4) {
+                    Text(displayName)
+                    if matchKind == .fallback {
+                        FallbackMatchIndicatorView(
+                            accessibilityLabel: L10n.RemoteNodes.RemoteNodes.Status.possibleMatch,
+                            accessibilityHint: L10n.RemoteNodes.RemoteNodes.Status.possibleMatchExplanation,
+                            title: L10n.RemoteNodes.RemoteNodes.Status.possibleMatchTitle,
+                            explanation: L10n.RemoteNodes.RemoteNodes.Status.possibleMatchExplanation
+                        )
+                    }
+                }
                 Text(L10n.RemoteNodes.RemoteNodes.History.notSeen)
                     .font(.caption2)
             }

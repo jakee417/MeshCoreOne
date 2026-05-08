@@ -3091,6 +3091,12 @@ public enum L10n {
         public static let packetsReceived = L10n.tr("RemoteNodes", "remoteNodes.status.packetsReceived", fallback: "Packets Received")
         /// Location: RepeaterStatusView.swift - Packets sent label
         public static let packetsSent = L10n.tr("RemoteNodes", "remoteNodes.status.packetsSent", fallback: "Packets Sent")
+        /// Location: RepeaterStatusView.swift - Accessibility label for possible match indicator
+        public static let possibleMatch = L10n.tr("RemoteNodes", "remoteNodes.status.possibleMatch", fallback: "Possible match, matched by short prefix")
+        /// Location: RepeaterStatusView.swift - Explanation of what a possible match means
+        public static let possibleMatchExplanation = L10n.tr("RemoteNodes", "remoteNodes.status.possibleMatchExplanation", fallback: "This name was matched using only a short prefix of the node's ID. Multiple nodes share this prefix, so the displayed name may not be correct.")
+        /// Location: RepeaterStatusView.swift - Title for possible match explanation popover
+        public static let possibleMatchTitle = L10n.tr("RemoteNodes", "remoteNodes.status.possibleMatchTitle", fallback: "Possible Match")
         /// Location: RepeaterStatusView.swift - Receive errors label
         public static let receiveErrors = L10n.tr("RemoteNodes", "remoteNodes.status.receiveErrors", fallback: "Packet Errors Received")
         /// Location: RepeaterStatusView.swift, RoomStatusView.swift - Refresh button accessibility label
