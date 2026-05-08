@@ -79,15 +79,8 @@ struct ChannelInfoSheet: View {
                     selectedFloodScope: selectedFloodScope,
                     deviceDefaultFloodScopeName: appState.connectedDevice?.defaultFloodScopeName,
                     isExpanded: $isRegionExpanded,
-                    isDiscovering: $isDiscoveringRegions,
-                    discoveryMessage: $discoveryMessage,
                     onFloodScopeSelected: { scope in
                         Task { await selectFloodScope(scope) }
-                    },
-                    onDiscoverTapped: {
-                        runDiscovery { newRegions in
-                            for region in newRegions { appState.connectionManager.addKnownRegion(region) }
-                        }
                     },
                     onManageTapped: {
                         showingRegionManagement = true
@@ -520,10 +513,7 @@ private struct ChannelInfoRegionSection: View {
     let selectedFloodScope: ChannelFloodScope
     let deviceDefaultFloodScopeName: String?
     @Binding var isExpanded: Bool
-    @Binding var isDiscovering: Bool
-    @Binding var discoveryMessage: String?
     let onFloodScopeSelected: (ChannelFloodScope) -> Void
-    let onDiscoverTapped: () -> Void
     let onManageTapped: () -> Void
 
     private var sortedPartitioned: (public: [String], private: [String]) {
@@ -552,22 +542,14 @@ private struct ChannelInfoRegionSection: View {
         Section {
             DisclosureGroup(isExpanded: $isExpanded) {
                 if knownRegions.isEmpty {
-                    ChannelInfoRegionEmptyContent(
-                        isDiscovering: isDiscovering,
-                        discoveryMessage: discoveryMessage,
-                        onDiscoverTapped: onDiscoverTapped,
-                        onManageTapped: onManageTapped
-                    )
+                    ChannelInfoRegionEmptyContent(onManageTapped: onManageTapped)
                 } else {
                     ChannelInfoRegionPickerContent(
                         selectedFloodScope: selectedFloodScope,
                         deviceDefaultFloodScopeName: deviceDefaultFloodScopeName,
                         publicRegions: sortedPartitioned.public,
                         privateRegions: sortedPartitioned.private,
-                        isDiscovering: isDiscovering,
-                        discoveryMessage: discoveryMessage,
                         onFloodScopeSelected: onFloodScopeSelected,
-                        onDiscoverTapped: onDiscoverTapped,
                         onManageTapped: onManageTapped
                     )
                 }
@@ -592,29 +574,9 @@ private struct ChannelInfoRegionLabel: View {
 }
 
 private struct ChannelInfoRegionActions: View {
-    let isDiscovering: Bool
-    let discoveryMessage: String?
-    let onDiscoverTapped: () -> Void
     let onManageTapped: () -> Void
 
     var body: some View {
-        if isDiscovering {
-            HStack {
-                ProgressView()
-                Text(L10n.Chats.Chats.ChannelInfo.Region.discovering)
-                    .foregroundStyle(.secondary)
-            }
-        } else if let discoveryMessage {
-            Text(discoveryMessage)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-
-        Button(L10n.Chats.Chats.ChannelInfo.Region.discover, systemImage: "antenna.radiowaves.left.and.right") {
-            onDiscoverTapped()
-        }
-        .disabled(isDiscovering)
-
         Button(L10n.Chats.Chats.ChannelInfo.Region.manageRegions, systemImage: "list.bullet") {
             onManageTapped()
         }
@@ -622,9 +584,6 @@ private struct ChannelInfoRegionActions: View {
 }
 
 private struct ChannelInfoRegionEmptyContent: View {
-    let isDiscovering: Bool
-    let discoveryMessage: String?
-    let onDiscoverTapped: () -> Void
     let onManageTapped: () -> Void
 
     var body: some View {
@@ -632,12 +591,7 @@ private struct ChannelInfoRegionEmptyContent: View {
             .font(.subheadline)
             .foregroundStyle(.secondary)
 
-        ChannelInfoRegionActions(
-            isDiscovering: isDiscovering,
-            discoveryMessage: discoveryMessage,
-            onDiscoverTapped: onDiscoverTapped,
-            onManageTapped: onManageTapped
-        )
+        ChannelInfoRegionActions(onManageTapped: onManageTapped)
     }
 }
 
@@ -646,10 +600,7 @@ private struct ChannelInfoRegionPickerContent: View {
     let deviceDefaultFloodScopeName: String?
     let publicRegions: [String]
     let privateRegions: [String]
-    let isDiscovering: Bool
-    let discoveryMessage: String?
     let onFloodScopeSelected: (ChannelFloodScope) -> Void
-    let onDiscoverTapped: () -> Void
     let onManageTapped: () -> Void
 
     private var effectiveDefault: String? {
@@ -692,12 +643,7 @@ private struct ChannelInfoRegionPickerContent: View {
             .foregroundStyle(.secondary)
         }
 
-        ChannelInfoRegionActions(
-            isDiscovering: isDiscovering,
-            discoveryMessage: discoveryMessage,
-            onDiscoverTapped: onDiscoverTapped,
-            onManageTapped: onManageTapped
-        )
+        ChannelInfoRegionActions(onManageTapped: onManageTapped)
     }
 
     /// When no device default is set, `.inherit` and `.allRegions` collapse into a
