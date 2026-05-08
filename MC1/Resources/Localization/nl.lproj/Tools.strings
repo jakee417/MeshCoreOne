@@ -130,6 +130,9 @@
 /* Location: RxLogView.swift - Region label */
 "tools.rxLog.regionLabel" = "Regio:";
 
+/* Location: RxLogView.swift - Unresolved region value */
+"tools.rxLog.regionUnresolved" = "Onbekend";
+
 /* Location: RxLogView.swift - Text label */
 "tools.rxLog.textLabel" = "Tekst:";
 

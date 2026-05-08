@@ -620,7 +620,10 @@
 "chats.message.info.snr" = "SNR: %@";
 
 /* Location: MessageActionsSheet.swift - Details row showing the radio region a flood-routed message was broadcast under - %@ is region name */
-"chats.message.info.floodedUnder" = "Broadcast region: %@";
+"chats.message.info.floodedUnder" = "Region: %@";
+
+/* Location: MessageActionsSheet.swift - Details row shown when region could not be resolved */
+"chats.message.info.regionUnresolved" = "Region: Unknown";
 
 /* Location: UnifiedMessageBubble.swift - Context menu submenu label */
 "chats.message.action.details" = "Details";
@@ -693,7 +696,7 @@
 "chats.message.hopCount.accessibilityLabel" = "Hop count: %d";
 
 /* Location: UnifiedMessageBubble.swift - Accessibility label for region footer - %@ is region name */
-"chats.message.region.accessibilityLabel" = "Broadcast region %@";
+"chats.message.region.accessibilityLabel" = "Region %@";
 
 // MARK: - Reactions
 

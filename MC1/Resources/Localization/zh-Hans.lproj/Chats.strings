@@ -620,7 +620,10 @@
 "chats.message.info.snr" = "信噪比：%@";
 
 /* Location: MessageActionsSheet.swift - Context menu text showing the radio region the message was flooded under - %@ is region name. "Flooded" is a domain term for mesh-broadcast across all nodes in a radio region. */
-"chats.message.info.floodedUnder" = "广播区域：%@";
+"chats.message.info.floodedUnder" = "区域：%@";
+
+/* Location: MessageActionsSheet.swift - Details row shown when region could not be resolved */
+"chats.message.info.regionUnresolved" = "区域：未知";
 
 /* Location: UnifiedMessageBubble.swift - Context menu submenu label */
 "chats.message.action.details" = "详情";
@@ -693,7 +696,7 @@
 "chats.message.hopCount.accessibilityLabel" = "跳数：%d";
 
 /* Location: UnifiedMessageBubble.swift - Accessibility label for region footer - %@ is region name. "Flooded" is a domain term for mesh-broadcast across all nodes in a radio region. */
-"chats.message.region.accessibilityLabel" = "广播区域 %@";
+"chats.message.region.accessibilityLabel" = "区域 %@";
 
 // MARK: - Reactions
 

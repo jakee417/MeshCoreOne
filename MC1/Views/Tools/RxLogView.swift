@@ -448,8 +448,11 @@ struct RxLogRowView: View {
                 if let channelName = entry.channelName {
                     DetailRow(label: L10n.Tools.Tools.RxLog.channelNameLabel, value: channelName)
                 }
-                if let regionScope = entry.regionScope {
-                    DetailRow(label: L10n.Tools.Tools.RxLog.regionLabel, value: regionScope)
+                if let transportCode = entry.transportCode, !transportCode.isEmpty {
+                    DetailRow(
+                        label: L10n.Tools.Tools.RxLog.regionLabel,
+                        value: entry.regionScope ?? L10n.Tools.Tools.RxLog.regionUnresolved
+                    )
                 }
                 if let text = entry.decodedText {
                     HStack(alignment: .top) {

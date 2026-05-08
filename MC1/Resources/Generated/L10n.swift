@@ -576,7 +576,7 @@ public enum L10n {
           public static let adjustedHint = L10n.tr("Chats", "chats.message.info.adjustedHint", fallback: "Sender's clock was incorrect")
           /// Location: MessageActionsSheet.swift - Details row showing the radio region a flood-routed message was broadcast under - %@ is region name
           public static func floodedUnder(_ p1: Any) -> String {
-            return L10n.tr("Chats", "chats.message.info.floodedUnder", String(describing: p1), fallback: "Broadcast region: %@")
+            return L10n.tr("Chats", "chats.message.info.floodedUnder", String(describing: p1), fallback: "Region: %@")
           }
           /// Location: UnifiedMessageBubble.swift - Context menu text showing heard repeats - %d is count, second %@ is "repeat" or "repeats"
           public static func heardRepeats(_ p1: Int, _ p2: Any) -> String {
@@ -590,6 +590,8 @@ public enum L10n {
           public static func received(_ p1: Any) -> String {
             return L10n.tr("Chats", "chats.message.info.received", String(describing: p1), fallback: "Received: %@")
           }
+          /// Location: MessageActionsSheet.swift - Details row shown when region could not be resolved
+          public static let regionUnresolved = L10n.tr("Chats", "chats.message.info.regionUnresolved", fallback: "Region: Unknown")
           /// Location: UnifiedMessageBubble.swift - Context menu text showing round trip time - %d is milliseconds
           public static func roundTrip(_ p1: Int) -> String {
             return L10n.tr("Chats", "chats.message.info.roundTrip", p1, fallback: "Round trip: %dms")
@@ -622,7 +624,7 @@ public enum L10n {
         public enum Region {
           /// Location: UnifiedMessageBubble.swift - Accessibility label for region footer - %@ is region name
           public static func accessibilityLabel(_ p1: Any) -> String {
-            return L10n.tr("Chats", "chats.message.region.accessibilityLabel", String(describing: p1), fallback: "Broadcast region %@")
+            return L10n.tr("Chats", "chats.message.region.accessibilityLabel", String(describing: p1), fallback: "Region %@")
           }
         }
         public enum Repeat {
@@ -4981,6 +4983,8 @@ public enum L10n {
         }
         /// Location: RxLogView.swift - Region label
         public static let regionLabel = L10n.tr("Tools", "tools.rxLog.regionLabel", fallback: "Region:")
+        /// Location: RxLogView.swift - Unresolved region value
+        public static let regionUnresolved = L10n.tr("Tools", "tools.rxLog.regionUnresolved", fallback: "Unknown")
         /// Location: RxLogView.swift - Filter menu section header
         public static let routeType = L10n.tr("Tools", "tools.rxLog.routeType", fallback: "Route Type")
         /// Location: RxLogView.swift - RSSI label

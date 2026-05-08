@@ -447,9 +447,10 @@ private struct ActionsIncomingDetailsRows: View {
             icon: "arrowshape.bounce.right"
         )
 
-        if let region = message.regionScope, message.isFloodRouted {
+        if message.routeType == .tcFlood {
             ActionInfoRow(
-                text: L10n.Chats.Chats.Message.Info.floodedUnder(region),
+                text: message.regionScope.map { L10n.Chats.Chats.Message.Info.floodedUnder($0) }
+                    ?? L10n.Chats.Chats.Message.Info.regionUnresolved,
                 icon: "globe"
             )
         }
