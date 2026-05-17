@@ -97,3 +97,9 @@ __pycache__
 
 # idea
 .idea/
+
+# VS Code
+.vscode/
+
+# SourceKit-LSP / xcode-build-server local config
+buildServer.json

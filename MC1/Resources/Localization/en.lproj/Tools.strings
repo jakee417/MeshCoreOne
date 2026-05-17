@@ -26,8 +26,19 @@
 /* Location: ToolsView.swift - Tool selection label */
 "tools.nodeDiscovery" = "Discover Nodes";
 
+/* Location: ToolsView.swift - Tool selection label */
+"tools.rangeTest" = "Range Test";
+
 /* Location: ToolsView.swift - Empty state when no tool selected */
 "tools.selectTool" = "Select a tool";
+
+// MARK: - Range Test View
+
+/* Location: RangeTestView.swift - Not connected empty state title */
+"tools.rangeTest.notConnected" = "Not Connected";
+
+/* Location: RangeTestView.swift - Not connected empty state description */
+"tools.rangeTest.notConnectedDescription" = "Connect to a mesh radio to use Range Test.";
 
 // MARK: - RX Log View
 

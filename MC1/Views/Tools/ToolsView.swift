@@ -8,6 +8,7 @@ struct ToolsView: View {
     private enum ToolSelection: Hashable, CaseIterable {
         case tracePath
         case lineOfSight
+        case rangeTest
         case rxLog
         case noiseFloor
         case nodeDiscovery
@@ -17,6 +18,7 @@ struct ToolsView: View {
             switch self {
             case .tracePath: L10n.Tools.Tools.tracePath
             case .lineOfSight: L10n.Tools.Tools.lineOfSight
+            case .rangeTest: L10n.Tools.Tools.rangeTest
             case .rxLog: L10n.Tools.Tools.rxLog
             case .noiseFloor: L10n.Tools.Tools.noiseFloor
             case .nodeDiscovery: L10n.Tools.Tools.nodeDiscovery
@@ -28,6 +30,7 @@ struct ToolsView: View {
             switch self {
             case .tracePath: "point.3.connected.trianglepath.dotted"
             case .lineOfSight: "eye"
+            case .rangeTest: "location.north.line"
             case .rxLog: "waveform.badge.magnifyingglass"
             case .noiseFloor: "waveform"
             case .nodeDiscovery: "dot.radiowaves.left.and.right"
@@ -42,6 +45,7 @@ struct ToolsView: View {
 
     private enum SidebarDestination: Hashable {
         case lineOfSightPoints
+        case rangeTestControls
     }
 
     @Environment(\.appState) private var appState
@@ -88,6 +92,9 @@ struct ToolsView: View {
             .onChange(of: sidebarPath) { _, _ in
                 if sidebarPath.isEmpty, isShowingLineOfSightPoints {
                     isShowingLineOfSightPoints = false
+                    selectedTool = nil
+                }
+                if sidebarPath.isEmpty, selectedTool == .rangeTest {
                     selectedTool = nil
                 }
             }
@@ -143,6 +150,21 @@ struct ToolsView: View {
                     LineOfSightView(viewModel: lineOfSightViewModel, layoutMode: .panel)
                         .navigationTitle(L10n.Tools.Tools.lineOfSight)
                         .navigationBarTitleDisplayMode(.inline)
+                case .rangeTestControls:
+                    RangeTestView(layoutMode: .panel)
+                        .navigationTitle(L10n.Tools.Tools.rangeTest)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button {
+                                    selectedTool = nil
+                                    sidebarPath = NavigationPath()
+                                } label: {
+                                    Label(L10n.Tools.Tools.title, systemImage: "chevron.left")
+                                        .labelStyle(.titleAndIcon)
+                                }
+                            }
+                        }
                 }
             }
         }
@@ -155,6 +177,9 @@ struct ToolsView: View {
         if tool == .lineOfSight {
             isShowingLineOfSightPoints = true
             sidebarPath.append(SidebarDestination.lineOfSightPoints)
+        } else if tool == .rangeTest {
+            isShowingLineOfSightPoints = false
+            sidebarPath.append(SidebarDestination.rangeTestControls)
         } else {
             isShowingLineOfSightPoints = false
         }
@@ -168,6 +193,7 @@ struct ToolsView: View {
         case .rxLog: RxLogView()
         case .noiseFloor: NoiseFloorView()
         case .nodeDiscovery: NodeDiscoveryView()
+        case .rangeTest: RangeTestView()
         case .cli: CLIToolView()
         }
     }
@@ -180,6 +206,7 @@ struct ToolsView: View {
         case .rxLog: RxLogView()
         case .noiseFloor: NoiseFloorView()
         case .nodeDiscovery: NodeDiscoveryView()
+        case .rangeTest: RangeTestView(layoutMode: .map)
         case .cli: CLIToolView()
         case .none: ContentUnavailableView(L10n.Tools.Tools.selectTool, systemImage: "wrench.and.screwdriver")
         }

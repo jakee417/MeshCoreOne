@@ -4505,6 +4505,8 @@ public enum L10n {
       /// Location: ToolsView.swift - Tool selection label
       public static let noiseFloor = L10n.tr("Tools", "tools.noiseFloor", fallback: "Noise Floor")
       /// Location: ToolsView.swift - Tool selection label
+      public static let rangeTest = L10n.tr("Tools", "tools.rangeTest", fallback: "Range Test")
+      /// Location: ToolsView.swift - Tool selection label
       public static let rxLog = L10n.tr("Tools", "tools.rxLog", fallback: "RX Log")
       /// Location: ToolsView.swift - Empty state when no tool selected
       public static let selectTool = L10n.tr("Tools", "tools.selectTool", fallback: "Select a tool")
@@ -4943,6 +4945,12 @@ public enum L10n {
           /// Location: NoiseFloorViewModel.swift - Signal quality: unknown
           public static let unknown = L10n.tr("Tools", "tools.noiseFloor.quality.unknown", fallback: "Unknown")
         }
+      }
+      public enum RangeTest {
+        /// Location: RangeTestView.swift - Not connected empty state title
+        public static let notConnected = L10n.tr("Tools", "tools.rangeTest.notConnected", fallback: "Not Connected")
+        /// Location: RangeTestView.swift - Not connected empty state description
+        public static let notConnectedDescription = L10n.tr("Tools", "tools.rangeTest.notConnectedDescription", fallback: "Connect to a mesh radio to use Range Test.")
       }
       public enum RxLog {
         /// Location: RxLogView.swift - Bytes suffix for size display

@@ -190,6 +190,11 @@ public final class AppState {
     /// Tracks the device ID for CLI state - reset CLI when device changes
     private var lastConnectedDeviceIDForCLI: UUID?
 
+    // MARK: - Range Test
+
+    /// Persistent range test view model (survives navigation, continues running in background)
+    var rangeTestViewModel: RangeTestViewModel?
+
     // MARK: - Status Pill
 
     /// The current status pill state, computed from all relevant conditions
